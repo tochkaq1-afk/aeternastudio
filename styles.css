@@ -1268,16 +1268,17 @@ body.is-curswap #chMonth{ animation:curFade .5s ease; }
    и кнопкам допов. Острова групп и подвал «Нужно другое?» из режима
    исключены нарочно — это рамки вокруг рамок, и когда горело всё разом,
    сам выбор тонул в общем сиянии */
-/* «Гореть всегда» распространено на карточки форматов, допов и кнопки:
-   бегущая рамка здесь работает не указателем, а фактурой — так задумано.
-   Острова групп и подвал «Нужно другое?» из режима по-прежнему исключены:
-   это были бы рамки вокруг рамок. */
+/* «Гореть всегда» распространено на карточки форматов, допов и главные
+   кнопки: бегущая рамка здесь работает не указателем, а фактурой.
+   Тихие кнопки («показать ещё», «написать») класса .neon не носят вовсе —
+   им рамка не идёт, они должны отступать на второй план. Острова групп
+   и подвал «Нужно другое?» исключены: это были бы рамки вокруг рамок. */
 body.is-neon-always .fmt:before,
 body.is-neon-always .aopt:before,
-body.is-neon-always .hbtn:before{ opacity:1; animation:neonSpin var(--neonSpin) var(--neonDelay,0s) linear infinite; }
+body.is-neon-always .hbtn.neon:before{ opacity:1; animation:neonSpin var(--neonSpin) var(--neonDelay,0s) linear infinite; }
 body.is-neon-always .fmt:after,
 body.is-neon-always .aopt:after,
-body.is-neon-always .hbtn:after{ opacity:calc(var(--neonGlow) * .6); animation:neonSpin var(--neonSpin) var(--neonDelay,0s) linear infinite; }
+body.is-neon-always .hbtn.neon:after{ opacity:calc(var(--neonGlow) * .6); animation:neonSpin var(--neonSpin) var(--neonDelay,0s) linear infinite; }
 @keyframes neonSpin{ to{ --ang:360deg } }
 
 @media (prefers-reduced-motion:reduce){
