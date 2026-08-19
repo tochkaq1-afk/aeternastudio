@@ -2284,7 +2284,12 @@ body.is-closed .ct__late{ display:block; }
    ============================================================ */
 @property --spark{ syntax:'<angle>'; initial-value:0deg; inherits:false; }
 
-.hbtn--spark{ position:relative; }
+/* :not(.hbtn--float) — кнопка меню совмещает обе: .hbtn--float уже даёт
+   ей position:fixed (нужно псевдоэлементу-искре ровно так же, как relative).
+   Без исключения оба правила одной специфичности спорили за position,
+   и побеждало то, что ниже по файлу — кнопка выпадала из fixed в обычный
+   поток и улетала в самый низ страницы */
+.hbtn--spark:not(.hbtn--float){ position:relative; }
 .hbtn--spark:after{
   content:''; position:absolute; inset:-1px; border-radius:inherit; padding:1.5px;
   background:conic-gradient(from var(--spark),
