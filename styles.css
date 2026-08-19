@@ -369,7 +369,13 @@ body:not(.is-nomac) .mac .shw{ border-radius:6px; box-shadow:none; border-color:
 .mac__phone__scr{
   position:relative; aspect-ratio:9/19.5; border-radius:15% / 7%; overflow:hidden; background:#000;
 }
-.mac__phone__img{ width:100%; height:100%; object-fit:cover; object-position:20% top; display:block; }
+.mac__phone__img{ width:100%; height:100%; object-fit:cover; object-position:top; display:block; }
+/* Динамик-остров — единственная деталь, которая мгновенно читается
+   как «это айфон», а не просто скруглённая карточка. */
+.mac__phone__isl{
+  position:absolute; top:6%; left:50%; translate:-50% 0;
+  width:28%; aspect-ratio:2.7/1; border-radius:999px; background:#000; z-index:2;
+}
 
 /* переключатель в твикере снимает корпус, оставляя голое окно браузера */
 .is-nomac .mac{ padding:0; background:none; box-shadow:none; }
