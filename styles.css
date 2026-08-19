@@ -348,6 +348,29 @@ body.is-closed .top__live{
    спорила с переходом, прописанным на .shw */
 body:not(.is-nomac) .mac .shw{ border-radius:6px; box-shadow:none; border-color:#0b0b0c; }
 
+/* ============================================================
+   ТЕЛЕФОН ВНАХЛЁСТ НА УГОЛ ВИТРИНЫ
+   Тот же металл, что у корпуса ноутбука (--s-hi/--s-1/--s-2/--s-3 —
+   переменные .mac, сюда приходят по наследованию). Рамку витрины это
+   не трогает вообще: телефон — отдельный слой поверх нижнего правого угла.
+   ============================================================ */
+.mac__phone{
+  position:absolute; right:clamp(-14px,-3%,-6px); bottom:clamp(-20px,-9%,-10px); z-index:4;
+  width:clamp(64px,15vw,118px);
+  border-radius:19% / 9%;
+  padding:5%;
+  background:linear-gradient(160deg, var(--s-hi) 0%, var(--s-2) 55%, var(--s-3) 100%);
+  box-shadow:
+    inset 0 1px 0 var(--s-hi),
+    inset 0 -6px 10px -6px rgba(0,0,0,.4),
+    0 20px 30px -16px rgba(0,0,0,.55);
+  pointer-events:none;
+}
+.mac__phone__scr{
+  position:relative; aspect-ratio:9/19.5; border-radius:15% / 7%; overflow:hidden; background:#000;
+}
+.mac__phone__img{ width:100%; height:100%; object-fit:cover; object-position:20% top; display:block; }
+
 /* переключатель в твикере снимает корпус, оставляя голое окно браузера */
 .is-nomac .mac{ padding:0; background:none; box-shadow:none; }
 .is-nomac .mac__hinge,

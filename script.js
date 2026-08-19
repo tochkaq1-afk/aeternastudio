@@ -896,6 +896,9 @@ if (shw){
   /* числа в метках живут снаружи .shw, в общей обёртке .mac */
   const tagV  = document.getElementById('tagV');
   const tagVB = document.getElementById('tagVB');
+  /* телефон внахлёст на угол витрины — та же картинка, отдельной
+     дорожки слайдов у него нет: src просто переставляется вслед за shwGo() */
+  const macPhoneImg = document.getElementById('macPhoneImg');
 
   view.innerHTML = SHOW.map((s, i) => `
     <div class="shw__p${i === 0 ? ' is-on' : ''}" data-k="${s.k}" role="img"
@@ -931,6 +934,7 @@ if (shw){
     bullets[si].setAttribute('aria-selected', 'true');
     nameEl.textContent = SHOW[si].n;
     descEl.textContent = SHOW[si].d;
+    if (macPhoneImg) macPhoneImg.src = SHOW[si].img;
     [[tagV, SHOW[si].lh], [tagVB, SHOW[si].seo]].forEach(([el, v]) => {
       if (!el) return;
       el.textContent = v;
@@ -944,6 +948,7 @@ if (shw){
      настоящие числа нулевой работы сразу, не дожидаясь первой смены слайда */
   if (tagV)  tagV.textContent  = SHOW[0].lh;
   if (tagVB) tagVB.textContent = SHOW[0].seo;
+  if (macPhoneImg) macPhoneImg.src = SHOW[0].img;
 
   const shwNext = () => shwGo((si + 1) % SHOW.length);
   const shwPlay = () => { clearInterval(shwTimer); shwTimer = setInterval(shwNext, 3800); };
