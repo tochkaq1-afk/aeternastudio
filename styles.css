@@ -1127,6 +1127,20 @@ body.is-cursor-custom .cursor{ display:block; }
   border:0; background:none; color:var(--dim); border-radius:100px; padding:5px 11px;
   cursor:pointer; transition:background .2s, color .2s; }
 .cur button.is-on{ background:var(--ink); color:var(--bg); }
+/* Ценники слева перекручиваются числами, а чек печатается своими строками —
+   его цифры меняются разом. Мягкая смена держит оба места в одном темпе,
+   иначе чек щёлкает раньше, чем слева доедет перекрутка. */
+body.is-curswap .li__p,
+body.is-curswap .ch__tv,
+body.is-curswap #chOff,
+body.is-curswap #chMonth{ animation:curFade .5s ease; }
+@keyframes curFade{ 0%{ opacity:.25 } 100%{ opacity:1 } }
+@media (prefers-reduced-motion:reduce){
+  body.is-curswap .li__p,
+  body.is-curswap .ch__tv,
+  body.is-curswap #chOff,
+  body.is-curswap #chMonth{ animation:none; }
+}
 
 /* ============================================================
    ИМЯ СЕКЦИИ «РАБОТЫ». Крупно набрано только оно: своего заголовка

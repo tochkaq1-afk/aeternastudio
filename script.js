@@ -1599,7 +1599,8 @@ function svcDrawLeft(){
     return `<div class="fgrp${live ? ' is-on' : ''}${open ? ' is-open' : ''}">
       <button class="fgrp__k" type="button" data-grp="${gi}" aria-expanded="${open}">
         <span class="eyebrow">${g}</span>
-        <span class="fgrp__meta">${cards.length} ${plural(cards.length)} · от ${svcMoney(from)} ${CUR_SYM[svcCur]}</span>
+        <span class="fgrp__meta" data-byn="${from}">${cards.length} ${plural(cards.length)} · от <span
+              class="cur-v">${svcMoney(from)}</span> <span class="cur-s">${CUR_SYM[svcCur]}</span></span>
         ${TGL}
       </button>
       <div class="fgrp__body"><div class="fgrp__in">
@@ -1611,7 +1612,8 @@ function svcDrawLeft(){
               <span class="fmt__dot"></span>
               <span class="fmt__n">${r.n}</span>
               <span class="fmt__d">${FMT[i].d}</span>
-              <span class="fmt__p">${svcMoney(r.p)}<small>${CUR_SYM[svcCur]}</small></span>
+              <span class="fmt__p" data-byn="${r.p}"><span
+                    class="cur-v">${svcMoney(r.p)}</span><small class="cur-s">${CUR_SYM[svcCur]}</small></span>
               <span class="fmt__t">от ${r.days} дней</span>
             </button>`).join('')}
         </div>
@@ -1652,7 +1654,9 @@ function svcDrawLeft(){
           <span>
             <span class="aopt__n">${r.n}</span>
             <span class="aopt__d">${info[0]}</span>
-            <span class="aopt__p">+${svcMoney(r.p)} ${CUR_SYM[svcCur]}${info[1] === 'мес' ? ' / мес' : ''}</span>
+            <span class="aopt__p" data-byn="${r.p}">+<span
+                  class="cur-v">${svcMoney(r.p)}</span> <span
+                  class="cur-s">${CUR_SYM[svcCur]}</span>${info[1] === 'мес' ? ' / мес' : ''}</span>
           </span>
         </button>`;
       }).join('')}
@@ -1838,6 +1842,43 @@ function svcBars(){
     () => `<i style="width:${1 + Math.round(Math.random() * 3)}px"></i>`).join('');
 }
 
+/* ---- плавная смена валюты
+   Числа не подменяются рывком, а перекручиваются от старой суммы к новой:
+   1290 BYN и 37 941 RUB — разные порядки, и мгновенная замена читается
+   как сбой, а не как пересчёт. Стартовое значение считаем из прежней
+   валюты, а не читаем со страницы: разобрать «37 941» обратно в число
+   мешает неразрывный пробел, который туда ставит toLocaleString.
+   Цикл один на все ценники разом — свой requestAnimationFrame на каждый
+   грел бы кадр без всякой пользы. */
+let curRaf = 0, svcCurT = 0;
+
+function svcCurPaint(prev){
+  const plan = [];
+  document.querySelectorAll('[data-byn]').forEach(host => {
+    const v = host.querySelector('.cur-v');
+    const s = host.querySelector('.cur-s');
+    if (s) s.textContent = CUR_SYM[svcCur];
+    if (!v) return;
+    const byn = +host.dataset.byn;
+    const from = Math.round(byn * CUR_RATE[prev]);
+    const to = Math.round(byn * CUR_RATE[svcCur]);
+    if (from !== to) plan.push({ v, from, to });
+  });
+  if (!plan.length) return;
+
+  cancelAnimationFrame(curRaf);
+  const dur = 460, t0 = performance.now();
+  const step = now => {
+    const p = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - p, 3);          /* тормозит к концу */
+    plan.forEach(o => {
+      o.v.textContent = Math.round(o.from + (o.to - o.from) * e).toLocaleString('ru-RU');
+    });
+    if (p < 1) curRaf = requestAnimationFrame(step);
+  };
+  curRaf = requestAnimationFrame(step);
+}
+
 /* переключатель валюты — один раз собираем кнопки, дальше только
    переставляем .is-on и перерисовываем цены */
 function svcCurBuild(){
@@ -1860,9 +1901,19 @@ function buildSvc(){
       const c = e.target.closest('[data-cur]');
       if (c){
         if (c.dataset.cur === svcCur) return;
+        const prev = svcCur;
         svcCur = c.dataset.cur;
         svcCurBox.querySelectorAll('button').forEach(b => b.classList.toggle('is-on', b === c));
-        svcDrawLeft(); svcDrawCheck();
+        /* левую колонку не пересобираем: перерисовка сбросила бы
+           перекрутку на полпути и заодно перезапустила бы рамки .neon.
+           Трогаем только сами числа */
+        svcCurPaint(prev);
+        svcDrawCheck();
+        /* чек печатается своими строками — ему хватает мягкой смены,
+           синхронной по времени с перекруткой слева */
+        document.body.classList.add('is-curswap');
+        clearTimeout(svcCurT);
+        svcCurT = setTimeout(() => document.body.classList.remove('is-curswap'), 520);
         return;
       }
 
