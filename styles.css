@@ -14,8 +14,14 @@
   --accent:#000000;
   --wire:#dbd7cc;
   --line:#d2cfc5;
-  /* лента чека: чуть светлее бумаги страницы, иначе чек сливается с фоном */
+  /* лента чека: чуть светлее бумаги страницы, иначе чек сливается с фоном.
+     Бумага всегда светлая, независимо от палитры сайта — это отдельный
+     физический предмет (лист, талон), а не крашеная поверхность. Поэтому
+     текст на ней держим на своей переменной, а не на --ink: у --ink
+     тёмных палитрах он становится светлым, и текст тонет в такой же
+     светлой бумаге */
   --paper:#fbfaf7;
+  --paper-ink:#111113;
 
   --fh:'Unbounded', system-ui, sans-serif;
   --fb:'Onest', system-ui, sans-serif;
@@ -1251,12 +1257,10 @@ body.is-neon-always .aopt:after{ opacity:calc(var(--neonGlow) * .6); animation:n
   display:grid; place-items:center; margin-bottom:12px; transition:border-color .25s;
 }
 .fmt__dot:after{
-  content:''; width:7px; height:7px; border-radius:50%; background:#22c55e;
+  content:''; width:7px; height:7px; border-radius:50%; background:var(--accent);
   transform:scale(0); transition:transform .3s cubic-bezier(.22,1,.36,1);
 }
-/* зелёный тут — не тема, а прямой цвет: только эта точка и галочка допов
-   ниже, просил зелёный именно на них и больше нигде */
-.fmt.is-on .fmt__dot{ border-color:#22c55e; }
+.fmt.is-on .fmt__dot{ border-color:var(--accent); }
 .fmt.is-on .fmt__dot:after{ transform:scale(1); }
 .fmt__n{ font-family:var(--fh); font-weight:600; font-size:clamp(15px,1.5vw,19px); letter-spacing:-.02em; }
 .fmt__d{ color:var(--dim); font-size:.8rem; margin-top:5px; flex:1; min-height:2.6em; }
@@ -1354,11 +1358,10 @@ button[aria-expanded="true"]:hover > .tgl:after{ transform:translateX(15px); }
   position:relative; overflow:hidden; transition:border-color .25s;
 }
 .aopt__box:before{
-  content:''; position:absolute; inset:0; border-radius:50%; background:#22c55e;
+  content:''; position:absolute; inset:0; border-radius:50%; background:var(--accent);
   transform:scale(0); transition:transform .38s cubic-bezier(.22,1,.36,1);
 }
-/* тот же прямой зелёный, не через --accent — см. комментарий у .fmt__dot */
-.aopt.is-on .aopt__box{ border-color:#22c55e; }
+.aopt.is-on .aopt__box{ border-color:var(--accent); }
 .aopt.is-on .aopt__box:before{ transform:scale(2.2); }
 .aopt__box svg{ position:absolute; inset:-1px; width:15px; height:15px; }
 .aopt__box path{
@@ -1399,7 +1402,7 @@ button[aria-expanded="true"]:hover > .tgl:after{ transform:translateX(15px); }
 }
 .check{
   position:relative; margin-top:-3px; padding:22px 22px 26px;
-  background:var(--paper); color:var(--ink);
+  background:var(--paper); color:var(--paper-ink);
   font-family:var(--fm); font-size:12.5px; line-height:1.75;
   box-shadow:0 26px 50px -34px color-mix(in srgb, var(--ink) 55%, transparent);
   /* рваный край снизу: зубцы вырезаны маской, а не нарисованы картинкой */
@@ -1416,7 +1419,7 @@ button[aria-expanded="true"]:hover > .tgl:after{ transform:translateX(15px); }
 }
 .ch__mark{ text-align:center; font-family:var(--fh); font-weight:600; font-size:13px; letter-spacing:.12em; }
 .ch__sub{ text-align:center; color:var(--dim); font-size:10.5px; letter-spacing:.08em; }
-.ch__rule{ border-top:1px dashed color-mix(in srgb, var(--ink) 35%, transparent); margin:12px 0 10px; }
+.ch__rule{ border-top:1px dashed color-mix(in srgb, var(--paper-ink) 35%, transparent); margin:12px 0 10px; }
 .ch__k{ font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--dim); margin-bottom:4px; }
 
 /* строка чека печатается слева направо. Ступени и время подобраны под
@@ -1428,7 +1431,7 @@ button[aria-expanded="true"]:hover > .tgl:after{ transform:translateX(15px); }
 @keyframes unprint{ to{ clip-path:inset(0 0 0 100%); height:0; margin:0; opacity:0 } }
 .li__n{ overflow:hidden; text-overflow:ellipsis; }
 /* точки-заполнители между названием и ценой — как в настоящем чеке */
-.li__dots{ flex:1; border-bottom:1px dotted color-mix(in srgb, var(--ink) 40%, transparent); transform:translateY(-3px); }
+.li__dots{ flex:1; border-bottom:1px dotted color-mix(in srgb, var(--paper-ink) 40%, transparent); transform:translateY(-3px); }
 .li__p{ white-space:nowrap; }
 .li--free .li__p{ color:var(--dim); }
 
@@ -1439,7 +1442,7 @@ button[aria-expanded="true"]:hover > .tgl:after{ transform:translateX(15px); }
 @keyframes chRoll{ from{ opacity:0; transform:translateY(.3em) } }
 .ch__row{ display:flex; justify-content:space-between; gap:10px; color:var(--dim); font-size:11.5px; }
 .ch__bars{ display:flex; gap:2px; align-items:flex-end; height:38px; margin:14px 0 6px; }
-.ch__bars i{ display:block; background:var(--ink); height:100%; }
+.ch__bars i{ display:block; background:var(--paper-ink); height:100%; }
 .ch__bye{ text-align:center; color:var(--dim); font-size:10.5px; letter-spacing:.1em; }
 .till__go{ width:100%; margin-top:16px; }
 /* Сброс нарочно набран текстом, а не кнопкой с рамкой: рядом с главной
@@ -2099,6 +2102,7 @@ body.is-closed .ct__late{ display:block; }
 .war{
   position:relative;
   border:1px solid var(--ink); border-radius:18px; background:var(--paper);
+  color:var(--paper-ink);
   overflow:hidden;
 }
 
@@ -2119,8 +2123,8 @@ body.is-closed .ct__late{ display:block; }
 .war__stamp{
   position:absolute; right:clamp(16px,2.4vw,30px); bottom:100%; margin-bottom:14px; z-index:3;
   font-family:var(--fh); font-weight:800; text-transform:uppercase; letter-spacing:.08em;
-  font-size:clamp(12px,1.2vw,15px); color:var(--ink);
-  border:2px solid var(--ink); border-radius:7px; padding:8px 14px;
+  font-size:clamp(12px,1.2vw,15px); color:var(--paper-ink);
+  border:2px solid var(--paper-ink); border-radius:7px; padding:8px 14px;
   transform:rotate(-13deg) scale(2.6); opacity:0;
   pointer-events:none;
 }
@@ -2171,7 +2175,7 @@ body.is-closed .ct__late{ display:block; }
 }
 .war__sig{
   font-family:var(--fh); font-weight:400; font-style:italic;
-  color:var(--ink); font-size:clamp(13px,1.3vw,17px); letter-spacing:-.02em;
+  color:var(--paper-ink); font-size:clamp(13px,1.3vw,17px); letter-spacing:-.02em;
 }
 
 @media (max-width:900px){
