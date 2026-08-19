@@ -83,6 +83,16 @@ a{ color:inherit; text-decoration:none; }
   transition:opacity .7s ease, transform .7s ease;
 }
 .is-lit .top{ opacity:1; transform:none; }
+/* Шапка уезжает вверх, пока листают вниз, и возвращается на движение
+   вверх: читать она не помогает, а место у верхней кромки занимает
+   постоянно. Прячем сдвигом, а не display — иначе возврат был бы
+   рывком, без перехода. 110% вместо 100%: у ссылки есть подчёркивание,
+   и ровно на высоту блока она не уходит целиком. */
+body.is-hidetop .top{
+  opacity:0; transform:translateY(-110%); pointer-events:none;
+}
+/* с открытым меню шапка обязана остаться: в ней кнопка закрытия */
+body.is-menu .top{ opacity:1; transform:none; pointer-events:auto; }
 
 .top__mark{ font-family:var(--fh); font-weight:600; letter-spacing:.06em; font-size:.95rem; }
 .top__right{ display:flex; align-items:center; gap:22px; }
@@ -1991,6 +2001,14 @@ button[aria-expanded="true"]:hover > .tgl:after{ transform:translateX(15px); }
 .ct__in:focus{ border-color:var(--ink); }
 .ct__in::placeholder{ color:var(--dim); }
 select.ct__in{ cursor:pointer; }
+/* Раскрытый список рисует система, на своей подложке — сайт до неё не
+   достаёт. Пункты наследовали --ink, а он на тёмной палитре почти белый,
+   и весь список пропадал на белом фоне системного меню. Цвета здесь
+   намеренно не из палитры: они про меню операционной системы. */
+select.ct__in option{ color:#111113; background:#ffffff; }
+@media (prefers-color-scheme:dark){
+  select.ct__in option{ color:#f2f0ea; background:#1c1c1f; }
+}
 
 /* Слово «Телеграм» вшито в поле слева — рамка теперь на обёртке, а не
    на самом инпуте, иначе при фокусе подсвечивались бы только цифры поля,
