@@ -88,8 +88,8 @@ const TILES = [
 
 /* ---------------------------------------------- настройки */
 const DEFAULTS = {
-  font:'unbGolos', palette:'paperInk',
-  bg:'#f2f0ea', ink:'#111113', dim:'#6c6a64', accent:'#1c8a52', wire:'#dbd7cc', line:'#d2cfc5',
+  font:'unbGolos', palette:'custom',
+  bg:'#0e0e10', ink:'#f2f0ea', dim:'#7f7d76', accent:'#fee9e1', wire:'#26262a', line:'#2e2e33',
 
   h1size:7.3, h1w:600, h1track:-0.025, h1lh:1.03, bodysize:1.1,
 
@@ -104,7 +104,7 @@ const DEFAULTS = {
      синь с бирюзой были единственным цветным пятном на бумажной палитре
      и выбивались из неё. Цена одноцветного градиента — вращение больше
      не читается, контур стоит ровной чёрной линией. */
-  neon1:'#000000', neon2:'#000000', neon3:'#000000',
+  neon1:'#ffffff', neon2:'#000000', neon3:'#000000',
   neonW:1.6, neonSpin:3, neonGlow:0, neonBlur:21, neonAlways:true,
   btn:'wide', radius:12,
   /* кнопки на первом экране: сняты — их работу делают меню внизу
