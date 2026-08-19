@@ -38,7 +38,7 @@
      Начертания урезаны до тех, что правда встречаются на странице. -->
 <link id="fontLink" rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Golos+Text:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=163">
+<link rel="stylesheet" href="styles.css?v=164">
 </head>
 <!-- Класс обязан совпадать с DEFAULTS.macFrame в script.js — те же грабли,
      что с :root и палитрой. apply() ставит его уже после первой отрисовки,
@@ -77,8 +77,15 @@
 <header class="top">
   <a class="top__mark" href="#"><span class="mark" data-txt="mark">AETERNAWEBSTUDIO</span></a>
   <div class="top__right">
+    <!-- Значок рисуем разметкой, а не картинкой: он должен брать цвет у
+         текста ссылки и переживать смену палитры в твикере. Пульсирующая
+         точка отсюда ушла вместе с ним — два знака подряд перед одним
+         словом спорили друг с другом, а «я на связи» и так говорит
+         живой огонёк в первом экране. -->
     <a class="top__tg" data-tg href="#" target="_blank" rel="noopener">
-      <i class="top__live" aria-hidden="true"></i><span data-txt="tg">телеграм</span>
+      <svg class="top__tgi" viewBox="0 0 24 24" aria-hidden="true"><path
+            d="M21.6 3.3L2.6 10.6c-.9.35-.9 1.6.02 1.9l4.7 1.5 1.8 5.6c.28.85 1.36 1.05 1.9.35l2.5-3.2 4.7 3.45c.6.44 1.45.11 1.6-.62l3.1-14.9c.17-.8-.6-1.47-1.32-1.18z"/></svg><span
+            data-txt="tg">телеграм</span>
     </a>
     <span class="top__place" data-txt="place">Минск</span>
   </div>
@@ -477,7 +484,7 @@
   <a class="foot__big" href="#hero" aria-label="Наверх"><span data-txt="name">AETERNA</span></a>
 </footer>
 
-<script src="script.js?v=160" defer></script>
+<script src="script.js?v=161" defer></script>
 <script src="dust.js?v=99" defer></script>
 
 <!-- Твикер посетителю не нужен, а весил он 33 КБ и был самым долгим
