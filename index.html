@@ -38,7 +38,7 @@
      Начертания урезаны до тех, что правда встречаются на странице. -->
 <link id="fontLink" rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Golos+Text:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=162">
+<link rel="stylesheet" href="styles.css?v=163">
 </head>
 <!-- Класс обязан совпадать с DEFAULTS.macFrame в script.js — те же грабли,
      что с :root и палитрой. apply() ставит его уже после первой отрисовки,
@@ -88,7 +88,7 @@
   <div class="menu__inner">
     <ul class="menu__list"></ul>
     <div class="menu__side">
-      <a class="hbtn hbtn--spark menu__cta" href="#contact" data-key="btn1"></a>
+      <a class="hbtn neon menu__cta" href="#contact" data-key="btn1"></a>
       <div class="menu__meta">
         <span data-txt="place">Минск</span>
         <a data-tg href="#" target="_blank" rel="noopener"><span data-txt="tg">телеграм</span></a>
@@ -134,8 +134,8 @@
       <div class="bl bl--cta">
         <i class="bl__ph"></i>
         <div class="bl__c">
-          <button class="hbtn hbtn--spark" type="button" data-key="btn1" data-states></button>
-          <a class="hbtn hbtn--quiet" href="#works" data-key="btn2"></a>
+          <button class="hbtn neon" type="button" data-key="btn1" data-states></button>
+          <a class="hbtn hbtn--quiet neon" href="#works" data-key="btn2"></a>
         </div>
       </div>
 
@@ -242,7 +242,7 @@
   <div class="wfilter" role="tablist" aria-label="Фильтр работ"></div>
   <div class="wgrid"></div>
   <div class="wmore">
-    <button class="hbtn hbtn--quiet" type="button" id="wmore" data-key="worksMore" data-noarrow></button>
+    <button class="hbtn hbtn--quiet neon" type="button" id="wmore" data-key="worksMore" data-noarrow></button>
   </div>
 </section>
 
@@ -272,7 +272,7 @@
       <div class="svc__rest rv" style="--d:180ms">
         <span class="svc__rt" data-txt="svcRestT">Нужно другое?</span>
         <span class="svc__rd" data-txt="svcRestD"></span>
-        <a class="hbtn hbtn--quiet" href="#contact" data-key="svcRestBtn" data-noarrow></a>
+        <a class="hbtn hbtn--quiet neon" href="#contact" data-key="svcRestBtn" data-noarrow></a>
       </div>
     </div>
 
@@ -311,7 +311,7 @@
         <div class="ch__bye"><span data-txt="svcChBye">спасибо, что дочитали</span> · <span id="chNo"></span></div>
       </div>
 
-      <a class="hbtn hbtn--spark till__go" href="#contact" data-key="svcCta"></a>
+      <a class="hbtn neon till__go" href="#contact" data-key="svcCta"></a>
       <!-- Сброс живёт под главной кнопкой и появляется только когда есть
            что сбрасывать: пустая кнопка рядом с пустым чеком сбивает с толку -->
       <button class="till__reset" type="button" id="svcReset" hidden data-txt="svcReset">собрать заново</button>
@@ -451,7 +451,7 @@
         <span>Согласен на обработку данных для ответа на заявку —
           <a href="privacy.html" target="_blank" rel="noopener">политика</a></span>
       </label>
-      <button class="hbtn hbtn--spark ct__send" type="submit" data-key="ctSend" data-states></button>
+      <button class="hbtn neon ct__send" type="submit" data-key="ctSend" data-states></button>
       <!-- Видна только вне рабочих часов. Форма при этом работает как обычно:
            статус гасит огонёк, но ничего не запрещает — иначе человек,
            зашедший ночью, ушёл бы ни с чем -->

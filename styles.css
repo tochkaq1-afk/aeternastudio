@@ -1179,10 +1179,11 @@ body.is-cursor-custom .cursor{ display:block; }
   --neonBlur:21px;      /* мягкость свечения */
 }
 
-/* :not(.hbtn--float) по той же причине, что у .hbtn--spark чуть ниже:
-   .hbtn--float уже даёт fixed, и он же нужен псевдоэлементам рамки —
-   ставить ещё и relative поверх смысла нет, а конфликт равных
-   специфичностей на кнопке меню уже один раз всё уронил сегодня */
+/* :not(.hbtn--float) — кнопка меню совмещает оба класса: .hbtn--float
+   уже даёт ей position:fixed, и он же нужен псевдоэлементам рамки, так
+   что relative поверх не нужен. Без исключения два правила одинаковой
+   специфичности спорят за position, побеждает то, что ниже по файлу,
+   и кнопка выпадает из fixed в обычный поток — уже роняли так однажды */
 .neon:not(.hbtn--float){ position:relative; }
 .neon:before{
   content:''; position:absolute; inset:0; z-index:2; pointer-events:none;
@@ -1218,10 +1219,10 @@ body.is-cursor-custom .cursor{ display:block; }
    сам выбор тонул в общем сиянии */
 body.is-neon-always .fmt:before,
 body.is-neon-always .aopt:before,
-body.is-neon-always .hbtn--menu:before{ opacity:1; animation:neonSpin var(--neonSpin) var(--neonDelay,0s) linear infinite; }
+body.is-neon-always .hbtn:before{ opacity:1; animation:neonSpin var(--neonSpin) var(--neonDelay,0s) linear infinite; }
 body.is-neon-always .fmt:after,
 body.is-neon-always .aopt:after,
-body.is-neon-always .hbtn--menu:after{ opacity:calc(var(--neonGlow) * .6); animation:neonSpin var(--neonSpin) var(--neonDelay,0s) linear infinite; }
+body.is-neon-always .hbtn:after{ opacity:calc(var(--neonGlow) * .6); animation:neonSpin var(--neonSpin) var(--neonDelay,0s) linear infinite; }
 @keyframes neonSpin{ to{ --ang:360deg } }
 
 @media (prefers-reduced-motion:reduce){
@@ -2328,37 +2329,10 @@ body.is-closed .ct__late{ display:block; }
   .menu__list a.flip span{ transition:none; }
 }
 
-/* ============================================================
-   Кнопка с бегущей по рамке искрой. Вместо offset-path крутим
-   конический градиент и вырезаем из него рамку маской — так же
-   выглядит, но работает без библиотек и лишних узлов.
-   ============================================================ */
-@property --spark{ syntax:'<angle>'; initial-value:0deg; inherits:false; }
-
-/* :not(.hbtn--float) — кнопка меню совмещает обе: .hbtn--float уже даёт
-   ей position:fixed (нужно псевдоэлементу-искре ровно так же, как relative).
-   Без исключения оба правила одной специфичности спорили за position,
-   и побеждало то, что ниже по файлу — кнопка выпадала из fixed в обычный
-   поток и улетала в самый низ страницы */
-.hbtn--spark:not(.hbtn--float){ position:relative; }
-.hbtn--spark:after{
-  content:''; position:absolute; inset:-1px; border-radius:inherit; padding:1.5px;
-  background:conic-gradient(from var(--spark),
-    transparent 0 62%,
-    color-mix(in srgb, var(--accent) 55%, transparent) 78%,
-    var(--accent) 88%,
-    transparent 96% 100%);
-  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor; mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite:exclude;
-  animation:hbtnSpark 4.5s linear infinite;
-  pointer-events:none;
-}
-@keyframes hbtnSpark{ to{ --spark:360deg } }
-
-@media (prefers-reduced-motion:reduce){
-  .hbtn--spark:after{ animation:none; }
-}
+/* Здесь жила отдельная «искра» для главных кнопок — свой конический
+   градиент, не совпадавший с рамкой .neon у карточек услуг и кнопки
+   меню. Два похожих, но разных приёма на одном экране читались как
+   недоделка, поэтому кнопки переведены на общий .neon, а искра убрана. */
 
 /* ============================================================
    Переход между экранами — «проявление». Выбран в лаборатории
