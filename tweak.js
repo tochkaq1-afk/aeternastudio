@@ -227,7 +227,7 @@ const SCHEMA = [
 
   { title:'Пятый экран — обо мне', items:[
     { k:'txtAboutPhrase',  t:'text', label:'Фраза (*приглушённое*)' },
-    { k:'txtAboutFacts',   t:'text', label:'Факты: имя :: текст, через |' }
+    { k:'txtAboutFacts',   t:'text', label:'Факты: имя :: текст, через | ({n} — число работ, подставится само)' }
   ]},
 
   { title:'Шестой экран — контакты', items:[

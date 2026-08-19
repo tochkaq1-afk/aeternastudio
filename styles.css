@@ -1529,26 +1529,44 @@ button[aria-expanded="true"]:hover > .tgl:after{ transform:translateX(15px); }
 .obj__i{
   border:1px solid var(--line); border-radius:18px; background:var(--wire);
   transition:border-color .3s ease, background .3s ease;
+  /* без обрезки квадратные углы заливки .obj__q торчали бы из-под
+     скруглённых углов карточки в момент раскрытия */
+  overflow:hidden;
 }
 .obj__i.is-open{ border-color:var(--ink); background:var(--bg); }
+/* Вопрос заливается графитом при раскрытии — будто по нему провели курсором.
+   Заливка на самой кнопке (не на .obj__i): у карточки уже есть переход
+   border/background, красить и его в тот же цвет, что заливка, незачем —
+   двигаться должен только сам вопрос, а не рамка вокруг него */
 .obj__q{
-  width:100%; display:flex; align-items:center; justify-content:space-between; gap:18px;
+  position:relative; width:100%; display:flex; align-items:center; justify-content:space-between; gap:18px;
   padding:clamp(16px,2.2vw,22px) clamp(16px,2.2vw,24px);
   background:none; border:0; color:inherit; font:inherit; text-align:left; cursor:pointer;
+  overflow:hidden; z-index:1;
 }
+.obj__q:after{
+  content:''; position:absolute; inset:0; background:var(--ink); z-index:-1;
+  transform:scaleX(0); transform-origin:0 50%;
+  transition:transform .45s cubic-bezier(.22,1,.36,1);
+}
+.obj__i.is-open .obj__q:after{ transform:scaleX(1); }
 .obj__qt{
   font-family:var(--fh); font-weight:600; letter-spacing:-.02em;
   font-size:clamp(15px,1.5vw,19px); line-height:1.25;
+  transition:color .3s ease;
 }
+.obj__i.is-open .obj__qt{ color:var(--bg); }
 /* плюс, который становится минусом: рисуем двумя полосками, а не знаком —
    шрифтовой «+» пляшет по высоте от гарнитуры к гарнитуре */
 .obj__sign{ position:relative; width:15px; height:15px; flex:none; }
 .obj__sign:before,.obj__sign:after{
   content:''; position:absolute; inset:50% 0 auto 0; height:1.5px; background:var(--ink);
-  transition:transform .38s cubic-bezier(.22,1,.36,1);
+  transition:transform .38s cubic-bezier(.22,1,.36,1), background .3s ease;
 }
 .obj__sign:after{ transform:rotate(90deg); }
 .obj__i.is-open .obj__sign:after{ transform:rotate(0deg); }
+.obj__i.is-open .obj__sign:before,
+.obj__i.is-open .obj__sign:after{ background:var(--bg); }
 
 .obj__a{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .42s cubic-bezier(.22,1,.36,1); }
 .obj__i.is-open .obj__a{ grid-template-rows:1fr; }

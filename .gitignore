@@ -1,0 +1,6 @@
+# Черновики и лаборатории — в публикацию не идут
+proto-*
+*.bak
+about-me.md
+cursor.js
+assets/flow/
