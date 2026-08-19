@@ -89,7 +89,7 @@ const TILES = [
 /* ---------------------------------------------- настройки */
 const DEFAULTS = {
   font:'unbGolos', palette:'custom',
-  bg:'#0e0e10', ink:'#f2f0ea', dim:'#7f7d76', accent:'#22c55e', wire:'#26262a', line:'#2e2e33',
+  bg:'#0e0e10', ink:'#f2f0ea', dim:'#7f7d76', accent:'#fee9e1', wire:'#26262a', line:'#2e2e33',
 
   h1size:7.3, h1w:600, h1track:-0.025, h1lh:1.03, bodysize:1.1,
 

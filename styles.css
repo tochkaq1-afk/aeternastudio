@@ -1251,10 +1251,12 @@ body.is-neon-always .aopt:after{ opacity:calc(var(--neonGlow) * .6); animation:n
   display:grid; place-items:center; margin-bottom:12px; transition:border-color .25s;
 }
 .fmt__dot:after{
-  content:''; width:7px; height:7px; border-radius:50%; background:var(--accent);
+  content:''; width:7px; height:7px; border-radius:50%; background:#22c55e;
   transform:scale(0); transition:transform .3s cubic-bezier(.22,1,.36,1);
 }
-.fmt.is-on .fmt__dot{ border-color:var(--accent); }
+/* зелёный тут — не тема, а прямой цвет: только эта точка и галочка допов
+   ниже, просил зелёный именно на них и больше нигде */
+.fmt.is-on .fmt__dot{ border-color:#22c55e; }
 .fmt.is-on .fmt__dot:after{ transform:scale(1); }
 .fmt__n{ font-family:var(--fh); font-weight:600; font-size:clamp(15px,1.5vw,19px); letter-spacing:-.02em; }
 .fmt__d{ color:var(--dim); font-size:.8rem; margin-top:5px; flex:1; min-height:2.6em; }
@@ -1352,10 +1354,11 @@ button[aria-expanded="true"]:hover > .tgl:after{ transform:translateX(15px); }
   position:relative; overflow:hidden; transition:border-color .25s;
 }
 .aopt__box:before{
-  content:''; position:absolute; inset:0; border-radius:50%; background:var(--accent);
+  content:''; position:absolute; inset:0; border-radius:50%; background:#22c55e;
   transform:scale(0); transition:transform .38s cubic-bezier(.22,1,.36,1);
 }
-.aopt.is-on .aopt__box{ border-color:var(--accent); }
+/* тот же прямой зелёный, не через --accent — см. комментарий у .fmt__dot */
+.aopt.is-on .aopt__box{ border-color:#22c55e; }
 .aopt.is-on .aopt__box:before{ transform:scale(2.2); }
 .aopt__box svg{ position:absolute; inset:-1px; width:15px; height:15px; }
 .aopt__box path{
