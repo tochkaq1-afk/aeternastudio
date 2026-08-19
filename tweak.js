@@ -497,6 +497,50 @@ function set(k, v){
 function syncAll(){ Object.values(bind).forEach(f => f()); }
 
 /* ------------------------------------------------- управление панелью */
+/* navigator.clipboard требует HTTPS (secure context) — на голом http://
+   он либо не существует, либо writeText молча падает, кнопка ничего не
+   делает и не жалуется. Запасной путь через textarea+execCommand работает
+   и по http; если не сработает и он — показываем текст на панели, чтобы
+   выделить и скопировать руками было можно в любом случае */
+function copyText(txt, btn){
+  const done = ok => {
+    btn.textContent = ok ? 'скопировано' : 'JSON';
+    setTimeout(() => { btn.textContent = 'JSON'; }, 1400);
+  };
+  if (navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(txt).then(() => done(true)).catch(() => fallback());
+    return;
+  }
+  fallback();
+  function fallback(){
+    const ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch(e){}
+    ta.remove();
+    if (ok){ done(true); return; }
+    showText(txt);
+    done(false);
+  }
+}
+
+/* последний рубеж: текст лежит прямо на панели, выделяется и копируется
+   вручную длинным тапом — это работает всегда, безо всякого API */
+function showText(txt){
+  let box = panel.querySelector('.tw__copybox');
+  if (!box){
+    box = el('textarea', 'tw__copybox');
+    box.readOnly = true;
+    panel.querySelector('.tw__head').insertAdjacentElement('afterend', box);
+  }
+  box.value = txt;
+  box.hidden = false;
+  box.focus(); box.select();
+}
+
 function open(v){
   panel.classList.toggle('is-open', v);
   toggle.textContent = v ? '✕' : '⚙';
@@ -511,10 +555,7 @@ panel.addEventListener('click', e => {
     const diff = {};
     for (const k in cfg) if (cfg[k] !== DEFAULTS[k]) diff[k] = cfg[k];
     const txt = JSON.stringify(Object.keys(diff).length ? diff : {}, null, 2);
-    navigator.clipboard.writeText(txt).then(() => {
-      e.target.textContent = 'скопировано';
-      setTimeout(() => e.target.textContent = 'JSON', 1400);
-    }).catch(() => console.log(txt));
+    copyText(txt, e.target);
   }
 });
 
