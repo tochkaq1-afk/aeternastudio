@@ -48,7 +48,7 @@ const FONTS = {
 
 /* ---------------------------------------------- палитры */
 const PALETTES = {
-  paperInk: { name:'Бумага и графит',   bg:'#f2f0ea', ink:'#111113', dim:'#6c6a64', accent:'#000000', wire:'#dbd7cc', line:'#d2cfc5' },
+  paperInk: { name:'Бумага и графит',   bg:'#f2f0ea', ink:'#111113', dim:'#6c6a64', accent:'#1c8a52', wire:'#dbd7cc', line:'#d2cfc5' },
   surik:    { name:'Графит и сурик',    bg:'#0e0e10', ink:'#f2f0ea', dim:'#8d8b85', accent:'#ff5b1f', wire:'#26262a', line:'#2e2e33' },
   blueprint:{ name:'Синька',            bg:'#0b1a2b', ink:'#e8f1fb', dim:'#7c93ab', accent:'#4da3ff', wire:'#12283f', line:'#1b3a55' },
   paper:    { name:'Бумага',            bg:'#f2f0ea', ink:'#111113', dim:'#6c6a64', accent:'#1f4bff', wire:'#dedbd2', line:'#d2cfc5' },
@@ -89,7 +89,7 @@ const TILES = [
 /* ---------------------------------------------- настройки */
 const DEFAULTS = {
   font:'unbGolos', palette:'paperInk',
-  bg:'#f2f0ea', ink:'#111113', dim:'#6c6a64', accent:'#000000', wire:'#dbd7cc', line:'#d2cfc5',
+  bg:'#f2f0ea', ink:'#111113', dim:'#6c6a64', accent:'#1c8a52', wire:'#dbd7cc', line:'#d2cfc5',
 
   h1size:7.3, h1w:600, h1track:-0.025, h1lh:1.03, bodysize:1.1,
 
