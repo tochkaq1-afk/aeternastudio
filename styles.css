@@ -1076,6 +1076,17 @@ body.is-cursor-custom .cursor{ display:block; }
 /* надзаголовок вне главного экрана: там его роль играет .bl--eyebrow */
 .eyebrow{ display:block; font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--dim); }
 
+/* строка с надзаголовком секции и переключателем валюты — единственное
+   место в .svc__head, которому нужна ширина в полный ряд, поэтому
+   уходит в отдельную обёртку, а не висит прямо в flex-колонке */
+.svc__eyerow{ display:flex; align-items:center; justify-content:space-between; gap:14px; width:100%; }
+.cur{ display:flex; gap:2px; flex:none; background:var(--wire); border:1px solid var(--line);
+  border-radius:100px; padding:2px; }
+.cur button{ font:inherit; font-family:var(--fm); font-size:.68rem; letter-spacing:.04em;
+  border:0; background:none; color:var(--dim); border-radius:100px; padding:5px 11px;
+  cursor:pointer; transition:background .2s, color .2s; }
+.cur button.is-on{ background:var(--ink); color:var(--bg); }
+
 /* ============================================================
    ИМЯ СЕКЦИИ «РАБОТЫ». Крупно набрано только оно: своего заголовка
    у секции нет, и мелкая серая метка оставляла главную секцию сайта

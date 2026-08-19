@@ -1472,6 +1472,7 @@ const svcFmts = document.querySelector('.svc__fmts');
 const svcCols = document.querySelector('.svc__cols');
 const svcCheck = document.getElementById('svcCheck');
 const svcResetBtn = document.getElementById('svcReset');
+const svcCurBox = document.getElementById('svcCur');
 /* формат по умолчанию запоминаем один раз: сброс возвращает именно его,
    а не нулевой — чек без формата пустой и показывать в нём нечего */
 const SVC_F0 = 1;
@@ -1492,7 +1493,13 @@ function svcReset(){
   svcDrawCheck();
 }
 
-const svcMoney = n => Number(n).toLocaleString('ru-RU');
+/* Цены в прайсе — плоские числа в BYN, курс условный (держим тем же,
+   что показывали в прототипе переключателя). Округляем до целого —
+   красивое число в валюте важнее математической точности до цента. */
+const CUR_RATE = { BYN:1, USD:1 / 3.2, RUB:100 / 3.4 };
+const CUR_SYM  = { BYN:'BYN', USD:'$', RUB:'₽' };
+let svcCur = 'BYN';
+const svcMoney = n => Math.round(Number(n) * CUR_RATE[svcCur]).toLocaleString('ru-RU');
 
 /* «5 форматов», но «1 формат» и «2 формата» — иначе заголовок группы
    читается как машинный вывод */
@@ -1587,7 +1594,7 @@ function svcDrawLeft(){
     return `<div class="fgrp${live ? ' is-on' : ''}${open ? ' is-open' : ''}">
       <button class="fgrp__k" type="button" data-grp="${gi}" aria-expanded="${open}">
         <span class="eyebrow">${g}</span>
-        <span class="fgrp__meta">${cards.length} ${plural(cards.length)} · от ${svcMoney(from)} BYN</span>
+        <span class="fgrp__meta">${cards.length} ${plural(cards.length)} · от ${svcMoney(from)} ${CUR_SYM[svcCur]}</span>
         ${TGL}
       </button>
       <div class="fgrp__body"><div class="fgrp__in">
@@ -1599,7 +1606,7 @@ function svcDrawLeft(){
               <span class="fmt__dot"></span>
               <span class="fmt__n">${r.n}</span>
               <span class="fmt__d">${FMT[i].d}</span>
-              <span class="fmt__p">${svcMoney(r.p)}<small>BYN</small></span>
+              <span class="fmt__p">${svcMoney(r.p)}<small>${CUR_SYM[svcCur]}</small></span>
               <span class="fmt__t">от ${r.days} дней</span>
             </button>`).join('')}
         </div>
@@ -1640,7 +1647,7 @@ function svcDrawLeft(){
           <span>
             <span class="aopt__n">${r.n}</span>
             <span class="aopt__d">${info[0]}</span>
-            <span class="aopt__p">+${r.p} BYN${info[1] === 'мес' ? ' / мес' : ''}</span>
+            <span class="aopt__p">+${svcMoney(r.p)} ${CUR_SYM[svcCur]}${info[1] === 'мес' ? ' / мес' : ''}</span>
           </span>
         </button>`;
       }).join('')}
@@ -1673,7 +1680,13 @@ function svcRunQueue(){
 
 function svcLine(host, key, name, price, cls){
   let el = host.querySelector(`[data-key="${CSS.escape(key)}"]`);
-  if (el) return el;
+  if (el){
+    /* строка уже напечатана — тронуть можно только число: смена валюты
+       не должна переигрывать анимацию печати заново */
+    const p = el.querySelector('.li__p');
+    if (p) p.textContent = price;
+    return el;
+  }
   el = document.createElement('div');
   el.className = 'li' + (cls ? ' ' + cls : '');
   el.dataset.key = key;
@@ -1715,18 +1728,18 @@ function svcDrawCheck(){
     [...svcOn].map(i => {
       const a = addAt(i);
       return a && a.row
-        ? { key:'a' + i, name:a.row.n, price:'+' + a.row.p + (a.info[1] === 'мес' ? '/мес' : '') }
+        ? { key:'a' + i, name:a.row.n, price:'+' + svcMoney(a.row.p) + (a.info[1] === 'мес' ? '/мес' : '') }
         : null;
     }).filter(Boolean));
 
   document.getElementById('chN').textContent = t.n;
   document.getElementById('chDays').textContent = t.days + ' дней';
-  document.getElementById('chSum').innerHTML = `<span>${svcMoney(t.sum)} BYN</span>`;
+  document.getElementById('chSum').innerHTML = `<span>${svcMoney(t.sum)} ${CUR_SYM[svcCur]}</span>`;
 
   document.getElementById('chOffRow').hidden = !t.off;
   document.getElementById('chOff').textContent = '− ' + svcMoney(t.off);
   document.getElementById('chMonthRow').hidden = !t.month;
-  document.getElementById('chMonth').textContent = t.month + ' BYN в месяц';
+  document.getElementById('chMonth').textContent = svcMoney(t.month) + ' ' + CUR_SYM[svcCur] + ' в месяц';
 }
 
 /* номер и дата: без них лента не читается как чек */
@@ -1752,7 +1765,7 @@ function svcSummary(){
   const t = svcCount();
   const parts = [f ? f.n : ''];
   if (adds.length) parts.push('плюс ' + adds.join(', '));
-  parts.push(`итого ${svcMoney(t.sum)} ${cfg.txtSvcCur || 'BYN'}`, `срок ${t.days} дн.`);
+  parts.push(`итого ${svcMoney(t.sum)} ${CUR_SYM[svcCur]}`, `срок ${t.days} дн.`);
   return parts.filter(Boolean).join(' · ');
 }
 
@@ -1820,8 +1833,17 @@ function svcBars(){
     () => `<i style="width:${1 + Math.round(Math.random() * 3)}px"></i>`).join('');
 }
 
+/* переключатель валюты — один раз собираем кнопки, дальше только
+   переставляем .is-on и перерисовываем цены */
+function svcCurBuild(){
+  if (!svcCurBox || svcCurBox.childElementCount) return;
+  svcCurBox.innerHTML = Object.keys(CUR_SYM).map(c =>
+    `<button type="button" class="${c === svcCur ? 'is-on' : ''}" data-cur="${c}">${c}</button>`).join('');
+}
+
 function buildSvc(){
   if (!svcSec) return;
+  svcCurBuild();
   svcDrawLeft();
   svcDrawCheck();
   svcStamp(); svcBars();
@@ -1830,6 +1852,15 @@ function buildSvc(){
     svcSec.dataset.wired = '1';
 
     svcSec.addEventListener('click', e => {
+      const c = e.target.closest('[data-cur]');
+      if (c){
+        if (c.dataset.cur === svcCur) return;
+        svcCur = c.dataset.cur;
+        svcCurBox.querySelectorAll('button').forEach(b => b.classList.toggle('is-on', b === c));
+        svcDrawLeft(); svcDrawCheck();
+        return;
+      }
+
       /* сворачивание группы: ловим раньше форматов, иначе клик по шапке
          пролетал бы дальше и ничего не делал */
       const g = e.target.closest('[data-grp]');

@@ -38,7 +38,7 @@
      Начертания урезаны до тех, что правда встречаются на странице. -->
 <link id="fontLink" rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Golos+Text:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=158">
+<link rel="stylesheet" href="styles.css?v=159">
 </head>
 <!-- Класс обязан совпадать с DEFAULTS.macFrame в script.js — те же грабли,
      что с :root и палитрой. apply() ставит его уже после первой отрисовки,
@@ -249,7 +249,10 @@
 <!-- услуги: слева форматы и допы, справа чек, который печатается сам -->
 <section class="svc" id="services">
   <div class="svc__head">
-    <span class="eyebrow rv" data-txt="svcEyebrow">услуги</span>
+    <div class="svc__eyerow">
+      <span class="eyebrow rv" data-txt="svcEyebrow">услуги</span>
+      <div class="cur rv" id="svcCur" role="tablist" aria-label="Валюта"></div>
+    </div>
     <h2 class="svc__h rv" style="--d:60ms" data-txt="svcTitle">Что я умею делать</h2>
     <p class="svc__lead rv" style="--d:120ms" data-txt="svcLead"></p>
   </div>
@@ -474,7 +477,7 @@
   <a class="foot__big" href="#hero" aria-label="Наверх"><span data-txt="name">AETERNA</span></a>
 </footer>
 
-<script src="script.js?v=158" defer></script>
+<script src="script.js?v=159" defer></script>
 <script src="dust.js?v=99" defer></script>
 
 <!-- Твикер посетителю не нужен, а весил он 33 КБ и был самым долгим
