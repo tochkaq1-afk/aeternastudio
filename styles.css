@@ -1134,7 +1134,11 @@ body.is-cursor-custom .cursor{ display:block; }
   --neonBlur:21px;      /* мягкость свечения */
 }
 
-.neon{ position:relative; }
+/* :not(.hbtn--float) по той же причине, что у .hbtn--spark чуть ниже:
+   .hbtn--float уже даёт fixed, и он же нужен псевдоэлементам рамки —
+   ставить ещё и relative поверх смысла нет, а конфликт равных
+   специфичностей на кнопке меню уже один раз всё уронил сегодня */
+.neon:not(.hbtn--float){ position:relative; }
 .neon:before{
   content:''; position:absolute; inset:0; z-index:2; pointer-events:none;
   border-radius:inherit; padding:var(--neonw);
@@ -1168,9 +1172,11 @@ body.is-cursor-custom .cursor{ display:block; }
    исключены нарочно — это рамки вокруг рамок, и когда горело всё разом,
    сам выбор тонул в общем сиянии */
 body.is-neon-always .fmt:before,
-body.is-neon-always .aopt:before{ opacity:1; animation:neonSpin var(--neonSpin) var(--neonDelay,0s) linear infinite; }
+body.is-neon-always .aopt:before,
+body.is-neon-always .hbtn--menu:before{ opacity:1; animation:neonSpin var(--neonSpin) var(--neonDelay,0s) linear infinite; }
 body.is-neon-always .fmt:after,
-body.is-neon-always .aopt:after{ opacity:calc(var(--neonGlow) * .6); animation:neonSpin var(--neonSpin) var(--neonDelay,0s) linear infinite; }
+body.is-neon-always .aopt:after,
+body.is-neon-always .hbtn--menu:after{ opacity:calc(var(--neonGlow) * .6); animation:neonSpin var(--neonSpin) var(--neonDelay,0s) linear infinite; }
 @keyframes neonSpin{ to{ --ang:360deg } }
 
 @media (prefers-reduced-motion:reduce){
