@@ -876,14 +876,18 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(menuFit);
 /* lh/seo — баллы Lighthouse под каждую работу. Пока прикидочные: реальные
    цифры встанут, когда прогоню все семь сайтов через тест — тогда меняются
    только эти два числа в строке, разметка и логика не трогаются. */
+/* mimg — снятый отдельно мобильный первый экран той же работы. Телефон
+   в углу витрины показывает именно его, а не обрезанный десктопный кадр:
+   обрезка давала увеличенный кусок широкой вёрстки, а смысл второго
+   устройства ровно в том, что там своя, мобильная раскладка. */
 const SHOW = [
-  { k:'dark',  n:'KLAUS',       d:'ресторан · меню и бронирование',   img:'assets/works/klaus.webp',       lh:96, seo:98 },
-  { k:'noir',  n:'МЕТРИУМ',     d:'недвижимость · подбор и заявки',   img:'assets/works/metrium.webp',     lh:94, seo:97 },
-  { k:'amber', n:'МОТОАРЕНА',   d:'мотосалон · витрина и сервис',     img:'assets/works/motoarena.webp',   lh:98, seo:100 },
-  { k:'rose',  n:'Nuvelle',     d:'магазин одежды · каталог и видео', img:'assets/works/nuvelle.webp',     lh:93, seo:96 },
-  { k:'acid',  n:'КИНОНОЧЬ',    d:'частный кинотеатр · брутализм',    img:'assets/works/cinemanight.webp', lh:97, seo:99 },
-  { k:'bloom', n:'FlowerHome',  d:'цветы с доставкой · каталог',      img:'assets/works/flowerhome.webp',  lh:95, seo:100 },
-  { k:'noir',  n:'Ray-Ban Meta',d:'концепт · сцена из 275 кадров',    img:'assets/works/rayban.webp',      lh:91, seo:94 }
+  { k:'dark',  n:'KLAUS',       d:'ресторан · меню и бронирование',   img:'assets/works/klaus.webp',       mimg:'assets/works/m-klaus.webp',       lh:96, seo:98 },
+  { k:'noir',  n:'МЕТРИУМ',     d:'недвижимость · подбор и заявки',   img:'assets/works/metrium.webp',     mimg:'assets/works/m-metrium.webp',     lh:94, seo:97 },
+  { k:'amber', n:'МОТОАРЕНА',   d:'мотосалон · витрина и сервис',     img:'assets/works/motoarena.webp',   mimg:'assets/works/m-motoarena.webp',   lh:98, seo:100 },
+  { k:'rose',  n:'Nuvelle',     d:'магазин одежды · каталог и видео', img:'assets/works/nuvelle.webp',     mimg:'assets/works/m-nuvelle.webp',     lh:93, seo:96 },
+  { k:'acid',  n:'КИНОНОЧЬ',    d:'частный кинотеатр · брутализм',    img:'assets/works/cinemanight.webp', mimg:'assets/works/m-cinemanight.webp', lh:97, seo:99 },
+  { k:'bloom', n:'FlowerHome',  d:'цветы с доставкой · каталог',      img:'assets/works/flowerhome.webp',  mimg:'assets/works/m-flowerhome.webp',  lh:95, seo:100 },
+  { k:'noir',  n:'Ray-Ban Meta',d:'концепт · сцена из 275 кадров',    img:'assets/works/rayban.webp',      mimg:'assets/works/m-rayban.webp',      lh:91, seo:94 }
 ];
 
 const shw = document.getElementById('shw');
@@ -896,8 +900,9 @@ if (shw){
   /* числа в метках живут снаружи .shw, в общей обёртке .mac */
   const tagV  = document.getElementById('tagV');
   const tagVB = document.getElementById('tagVB');
-  /* телефон внахлёст на угол витрины — та же картинка, отдельной
-     дорожки слайдов у него нет: src просто переставляется вслед за shwGo() */
+  /* телефон внахлёст на угол витрины — своя, мобильная съёмка той же
+     работы. Отдельной дорожки слайдов у него нет: src переставляется
+     вслед за shwGo(), так что оба экрана всегда про один сайт */
   const macPhoneImg = document.getElementById('macPhoneImg');
 
   view.innerHTML = SHOW.map((s, i) => `
@@ -934,7 +939,7 @@ if (shw){
     bullets[si].setAttribute('aria-selected', 'true');
     nameEl.textContent = SHOW[si].n;
     descEl.textContent = SHOW[si].d;
-    if (macPhoneImg) macPhoneImg.src = SHOW[si].img;
+    if (macPhoneImg) macPhoneImg.src = SHOW[si].mimg;
     [[tagV, SHOW[si].lh], [tagVB, SHOW[si].seo]].forEach(([el, v]) => {
       if (!el) return;
       el.textContent = v;
@@ -948,7 +953,7 @@ if (shw){
      настоящие числа нулевой работы сразу, не дожидаясь первой смены слайда */
   if (tagV)  tagV.textContent  = SHOW[0].lh;
   if (tagVB) tagVB.textContent = SHOW[0].seo;
-  if (macPhoneImg) macPhoneImg.src = SHOW[0].img;
+  if (macPhoneImg) macPhoneImg.src = SHOW[0].mimg;
 
   const shwNext = () => shwGo((si + 1) % SHOW.length);
   const shwPlay = () => { clearInterval(shwTimer); shwTimer = setInterval(shwNext, 3800); };

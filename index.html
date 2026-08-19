@@ -38,7 +38,7 @@
      Начертания урезаны до тех, что правда встречаются на странице. -->
 <link id="fontLink" rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Golos+Text:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=160">
+<link rel="stylesheet" href="styles.css?v=162">
 </head>
 <!-- Класс обязан совпадать с DEFAULTS.macFrame в script.js — те же грабли,
      что с :root и палитрой. apply() ставит его уже после первой отрисовки,
@@ -186,12 +186,12 @@
               <div class="shw__dots" role="tablist" aria-label="Работы"></div>
             </div>
           </div>
-          <!-- Телефон внахлёст на угол витрины — той же живой картинкой, без
-               своей смены слайдов: JS переставляет ему src ровно там же,
-               где меняет крупный кадр, отдельной анимации не заводим. -->
+          <!-- Телефон внахлёст на угол витрины: та же работа, но снятая
+               отдельно в мобильной ширине. Своей смены слайдов у него нет —
+               JS переставляет src ровно там же, где меняет крупный кадр. -->
           <div class="mac__phone" aria-hidden="true">
             <div class="mac__phone__scr"><img class="mac__phone__img" id="macPhoneImg"
-                 src="assets/works/klaus.webp" alt="">
+                 src="assets/works/m-klaus.webp" alt="">
               <span class="mac__phone__isl"></span>
             </div>
           </div>
@@ -477,7 +477,7 @@
   <a class="foot__big" href="#hero" aria-label="Наверх"><span data-txt="name">AETERNA</span></a>
 </footer>
 
-<script src="script.js?v=159" defer></script>
+<script src="script.js?v=160" defer></script>
 <script src="dust.js?v=99" defer></script>
 
 <!-- Твикер посетителю не нужен, а весил он 33 КБ и был самым долгим
