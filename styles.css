@@ -89,22 +89,19 @@ a{ color:inherit; text-decoration:none; }
 .top__place,.top__tg{
   font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--dim);
 }
-/* значок телеграма слева от слова: fill:currentColor — он обязан менять
-   цвет вместе со ссылкой, иначе на светлой палитре останется белым */
+/* значок телеграма слева от слова, тот же, что в меню */
 .top__tg{ display:inline-flex; align-items:center; gap:8px; }
 .top__tgi{ width:14px; height:14px; fill:currentColor; flex:none; }
-/* @keyframes beat остались ради живого огонька в контактах — в шапке
-   точку заменил значок телеграма */
+/* @keyframes beat остались ради живого огонька в контактах */
 @keyframes beat{
   0%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent) }
   70%{ box-shadow:0 0 0 9px color-mix(in srgb, var(--accent) 0%, transparent) }
   100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent) }
 }
 .top__tg{ position:relative; color:var(--ink); }
-/* Подчёркивание стоит всегда, приглушённое: ссылка в шапке набрана тем же
-   кеглем, что и «Минск» рядом, и без линии не читалась как ссылка вовсе.
-   Яркая линия по наведению доезжает поверх — это прежняя анимация,
-   ей просто добавили покой, из которого расти. */
+/* Подчёркивание стоит всегда, приглушённое: ссылка набрана тем же кеглем,
+   что «Минск» рядом, и без линии не читалась как ссылка. Яркая линия
+   доезжает по наведению — прежняя анимация, получившая покой. */
 .top__tg span{
   position:relative; padding-bottom:3px;
   border-bottom:1px solid color-mix(in srgb, var(--ink) 26%, transparent);
@@ -196,7 +193,11 @@ a{ color:inherit; text-decoration:none; }
 /* Нерабочее время (вне 10:00–22:00 по Москве): огоньки перестают пульсировать
    и гаснут до серого. Пульсирующая точка обещает «я тут прямо сейчас» —
    ночью это обещание было бы ложным. Класс ставит drawText() по isOpenNow() */
-body.is-closed .dot,
+/* Гаснуть должны только огоньки статуса «я на связи» — они и обещают
+   присутствие прямо сейчас. Метки витрины сюда не входят: балл PageSpeed
+   не зависит от времени суток, и погашенная точка рядом с числом читалась
+   как «замер устарел». Раньше правило било по всем .dot разом. */
+body.is-closed .meta__badge .dot,
 body.is-closed .ct__live{
   animation:none !important;
   background:var(--dim); box-shadow:none; opacity:.55;
@@ -719,6 +720,23 @@ body.is-menu .menu__side{ opacity:1; transform:none; }
   font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--dim);
 }
 .menu__meta a:hover{ color:var(--accent); }
+
+/* Телеграм в меню: значок плюс подчёркивание. Линия стоит всегда,
+   приглушённой — ссылка набрана тем же кеглем, что «Минск» над ней,
+   и без неё не читалась как ссылка вовсе. Яркая доезжает по наведению.
+   fill:currentColor — значок меняет цвет вместе с самой ссылкой. */
+.menu__tg{ display:inline-flex; align-items:center; gap:8px; }
+.menu__tgi{ width:14px; height:14px; fill:currentColor; flex:none; }
+.menu__tg span{
+  position:relative; padding-bottom:3px;
+  border-bottom:1px solid color-mix(in srgb, currentColor 32%, transparent);
+}
+.menu__tg span:after{
+  content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px;
+  background:currentColor; transform:scaleX(0); transform-origin:left;
+  transition:transform .4s cubic-bezier(.22,1,.36,1);
+}
+.menu__tg:hover span:after{ transform:scaleX(1); }
 
 /* ---------------------------------------------- курсор */
 /* ---------------------------------------------- свет под курсором */
