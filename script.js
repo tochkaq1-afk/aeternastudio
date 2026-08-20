@@ -980,6 +980,16 @@ if (shw){
        приклеенная к её углу. Ловим курсор тоже по обёртке — иначе метка
        торчала бы из области, которая на него отзывается */
     const box = shw.closest('.mac') || shw;
+    /* Телефон лежит внахлёст и торчит за габариты корпуса. Слушать курсор
+       на самой витрине нельзя: над этим выступом он формально уже снаружи,
+       прилетает pointerleave, магнит сбрасывается в ноль, а следующее
+       движение включает его заново — витрина дёргалась туда-сюда. Поэтому
+       события берём у родителя, а попадание считаем сами по двум
+       прямоугольникам сразу. Источник — вся секция: ближайшие родители
+       витрины обрезаны ровно по её ширине, и выступ телефона оказывается
+       снаружи даже для них. Лишнего это не стоит: попадание всё равно
+       считается вручную, секция тут только раздаёт события. */
+    const zone = box.closest('.hero') || box.parentElement || box;
     let tx = 0, ty = 0, tRaf = 0;
 
     const tiltDraw = () => {
@@ -988,20 +998,33 @@ if (shw){
       box.style.setProperty('--ty', ty.toFixed(3));
     };
 
-    box.addEventListener('pointermove', e => {
+    const tiltOff = () => {
+      if (!box.classList.contains('is-live')) return;
+      if (tRaf){ cancelAnimationFrame(tRaf); tRaf = 0; }
+      box.classList.remove('is-live');
+      tx = ty = 0;
+      tiltDraw();                      /* в ноль — назад вернёт долгий переход из CSS */
+    };
+
+    const inBox = (r, e) => r && e.clientX >= r.left && e.clientX <= r.right &&
+                                 e.clientY >= r.top  && e.clientY <= r.bottom;
+
+    zone.addEventListener('pointermove', e => {
       const r = box.getBoundingClientRect();
+      const phone = box.querySelector('.mac__phone');
+      if (!inBox(r, e) && !inBox(phone && phone.getBoundingClientRect(), e)){
+        tiltOff();
+        return;
+      }
+      /* сдвиг всегда считаем от центра корпуса — над телефоном значения
+         просто выходят чуть за ±0.5, и движение продолжается плавно */
       tx = (e.clientX - r.left) / r.width - .5;
       ty = (e.clientY - r.top) / r.height - .5;
       box.classList.add('is-live');
       if (!tRaf) tRaf = requestAnimationFrame(tiltDraw);
     }, { passive:true });
 
-    box.addEventListener('pointerleave', () => {
-      if (tRaf){ cancelAnimationFrame(tRaf); tRaf = 0; }
-      box.classList.remove('is-live');
-      tx = ty = 0;
-      tiltDraw();                      /* в ноль — назад вернёт долгий переход из CSS */
-    });
+    zone.addEventListener('pointerleave', tiltOff);
   }
   /* в фоновой вкладке крутить нечего: кадры всё равно не рисуются */
   document.addEventListener('visibilitychange', () => document.hidden ? shwStop() : shwPlay());
