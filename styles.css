@@ -383,6 +383,35 @@ body:not(.is-nomac) .mac .shw{ border-radius:6px; box-shadow:none; border-color:
   /* тень корпуса и мягкий контактный блик от витрины под ним */
   filter:drop-shadow(0 18px 24px rgba(0,0,0,.6));
   pointer-events:none;
+  /* Телефон тянется к курсору охотнее ноутбука. --tx/--ty приезжают от .mac
+     по наследованию — своего слушателя заводить не нужно. Телефон и так едет
+     вместе с корпусом на 22px, эти 15 идут сверху: разная скорость двух
+     предметов и даёт глубину, приклеенными друг к другу они не выглядят.
+     Поворот маленький нарочно — на ширине в сотню пикселей больший угол
+     читается как перекос вёрстки, а не как движение. */
+  transform:translate3d(calc(var(--tx,0) * 15px), calc(var(--ty,0) * 15px), 0)
+            rotate(calc(var(--tx,0) * 2.2deg));
+  transition:transform .9s cubic-bezier(.22,1,.36,1);
+}
+/* пока курсор внутри — короткий переход, иначе телефон тащится следом
+   с опозданием. Класс висит на .mac, его ставит тот же слушатель,
+   что двигает витрину */
+.mac.is-live .mac__phone{ transition:transform .16s ease-out; }
+/* На тач-экране магнита нет — курсора нет, и витрина осталась бы совсем
+   неподвижной. Вместо него тихое парение в противофазе: ноутбук вверх,
+   телефон вниз. Ход маленький, глаз движение почти не ловит, но картинка
+   перестаёт читаться скриншотом. */
+@media (hover:none){
+  .mac{ animation:macFloat 7s ease-in-out infinite; }
+  .mac__phone{ animation:phFloat 7s ease-in-out infinite; }
+  @keyframes macFloat{ 0%,100%{ transform:translate3d(0,0,0) } 50%{ transform:translate3d(0,-7px,0) } }
+  @keyframes phFloat{
+    0%,100%{ transform:translate3d(0,0,0) rotate(0) }
+    50%{ transform:translate3d(0,6px,0) rotate(-1.4deg) } }
+}
+@media (prefers-reduced-motion:reduce){
+  .mac__phone{ transform:none; transition:none; animation:none; }
+  .mac{ animation:none; }
 }
 .mac__phone__scr{
   position:relative; aspect-ratio:9/19.5; border-radius:17% / 8%; overflow:hidden; background:#000;
