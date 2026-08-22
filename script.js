@@ -149,7 +149,7 @@ const DEFAULTS = {
      кому-то другому — то есть однажды имя и телеграм заказчика ушли бы
      на чужой сервер. Постоянный адрес — это Space, поднимается по
      DEPLOY.md в папке crm. */
-  txtLeadUrl:'https://tochkaq1-afk-aeterna-crm.hf.space/api/lead',
+  txtLeadUrl:'https://n777he-aeterna-crm.hf.space/api/lead',
   txtMenu:'МЕНЮ',
   txtMenuOpen:'ЗАКРЫТЬ',
   txtMenuList:'РАБОТЫ|УСЛУГИ|КАК Я РАБОТАЮ|ОБО МНЕ|КОНТАКТЫ',
