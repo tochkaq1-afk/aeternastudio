@@ -137,7 +137,10 @@ const DEFAULTS = {
   txtTgCta:'или сразу в телеграм',
   /* адрес живой: пока он пустой, все ссылки в телеграм намеренно
      не кликаются — см. конец drawText() */
-  txtTgUrl:'https://t.me/aeternastudio',
+  /* Ведёт на бота, не на личный профиль: сообщения оттуда бот сам
+     пересылает в личку и, если включено, отвечает автоответом — весь
+     этот путь настраивается командой /settings в самом боте. */
+  txtTgUrl:'https://t.me/aeterna_crm_bot',
   /* Куда форма шлёт заявку. Раньше вела на CRM (Hugging Face) — там же и
      упёрлись в чужой баг с квотой на бесплатное железо, без даты починки.
      Сейчас проще: без CRM и без базы, просто воркер Cloudflare — код без
@@ -420,7 +423,11 @@ const DEFAULTS = {
   txtCtWho:'Тимофей',
   txtCtLead:'Отвечаю в телеграме, обычно в тот же день. Если проект не мой — так и скажу и подскажу, к кому идти.',
   txtCtCard:'Город :: Минск|Telegram :: {tg}|Ответ :: в течение дня|• Сейчас :: {status}',
-  txtTgName:'@aeternastudio',
+  /* Подпись рядом с ссылками на телеграм. Раньше тут стоял личный ник —
+     теперь ссылки ведут на бота, а не на профиль, и подпись обязана
+     совпадать с тем, куда она правда ведёт: иначе человек нажимает
+     «@aeternastudio», а попадает в чат с ботом, и это читается как ошибка. */
+  txtTgName:'AETÉRNA в телеграме',
   txtCtPhName:'Имя',
   txtCtPhContact:'@username',
   txtCtPhAbout:'О задаче',
@@ -578,9 +585,37 @@ function mskHour(){
   }
 }
 
+/* null — переключателя в боте не трогали, статус считаем по часам, как
+   раньше. true/false — там явно выставили «работаю» или «не работаю»,
+   и это перекрывает часы: могут быть в отпуске в рабочий день и наоборот. */
+let remoteWorking = null;
+
 function isOpenNow(){
+  if (remoteWorking !== null) return remoteWorking;
   const h = mskHour();
   return h >= cfg.txtOpenFrom && h < cfg.txtOpenTo;
+}
+
+/* Спрашиваем воркер один раз при загрузке. Не задерживаем этим первую
+   отрисовку — статус до ответа посчитан по часам, а когда ответ придёт
+   (или не придёт, тогда ничего не меняем), просто перерисовываем текст
+   ещё раз. drawText() к повторному вызову готова, она вызывается so и
+   при обычной работе твикера. */
+function loadRemoteStatus(){
+  const url = String(cfg.txtLeadUrl || '').trim().replace(/\/$/, '') + '/status';
+  if (!/^https?:\/\//.test(url)) return;
+  const ac = new AbortController();
+  const to = setTimeout(() => ac.abort(), 4000);
+  fetch(url, { signal:ac.signal })
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (d && (d.working === true || d.working === false)){
+        remoteWorking = d.working;
+        drawText();
+      }
+    })
+    .catch(() => {})           /* не ответил — молча остаёмся на часах */
+    .finally(() => clearTimeout(to));
 }
 
 /* ---------------------------------------------- тексты */
@@ -2828,6 +2863,7 @@ heroCtaApply();
 menuFit();
 requestAnimationFrame(menuFrame);
 apply();
+loadRemoteStatus();
 setTime(0);
 requestAnimationFrame(tick);
 /* ---------------------------------------------- интро загрузки */
