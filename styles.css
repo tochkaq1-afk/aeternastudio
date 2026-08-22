@@ -2074,6 +2074,13 @@ select.ct__in option{ color:#111113; background:#ffffff; }
 .ct__pfx__w{ flex:none; color:var(--dim); font-size:.92rem; white-space:nowrap; }
 .ct__pfx .ct__in{ flex:1; min-width:0; border:0; padding-left:0; }
 
+/* Ловушка для ботов. Не display:none и не hidden: часть ботов такие поля
+   пропускает как раз потому, что их не видно. Поле настоящее, занимает
+   нулевое место и уведено из поля зрения — экранный диктор его тоже не
+   прочитает, за это отвечает aria-hidden в разметке. */
+.ct__hp{ position:absolute; left:-9999px; width:1px; height:1px;
+  opacity:0; pointer-events:none; }
+
 /* Согласие на обработку. Квадратик рисуем сами: системный чекбокс на светлом
    фоне выглядит чужеродно рядом с остальной формой */
 .ct__agree{ display:flex; align-items:flex-start; gap:10px; cursor:pointer;

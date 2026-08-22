@@ -22,7 +22,7 @@
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src 'self' https://fonts.gstatic.com;
   img-src 'self' data:;
-  connect-src 'self';
+  connect-src 'self' https://*.hf.space https://*.trycloudflare.com;
   form-action 'self';
   base-uri 'self';
   object-src 'none'">
@@ -457,6 +457,12 @@
         <input class="ct__in" name="contact" data-ph="ctPhContact" aria-label="Telegram username">
       </div>
       <input class="ct__in" name="about" data-ph="ctPhAbout" aria-label="О задаче">
+      <!-- Ловушка для ботов: поля не видно и в обход табуляции его не поймать,
+           поэтому человек его не заполнит. Простой бот заполняет всё подряд —
+           CRM такую заявку молча выбрасывает, отвечая «спасибо», чтобы бот
+           не понял, что его раскусили. -->
+      <input class="ct__hp" name="website" tabindex="-1" autocomplete="off"
+             aria-hidden="true">
       <!-- Согласие на обработку — не для галочки: форма собирает имя и телеграм,
            а это персональные данные (Закон РБ № 99-З). Галочка снята по умолчанию
            намеренно: предустановленная не считается согласием. -->
@@ -491,7 +497,7 @@
   <a class="foot__big" href="#hero" aria-label="Наверх"><span data-txt="name">AETERNA</span></a>
 </footer>
 
-<script src="script.js?v=171" defer></script>
+<script src="script.js?v=172" defer></script>
 <script src="dust.js?v=99" defer></script>
 
 <!-- Твикер посетителю не нужен, а весил он 33 КБ и был самым долгим

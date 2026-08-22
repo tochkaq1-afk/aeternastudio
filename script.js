@@ -138,6 +138,18 @@ const DEFAULTS = {
   /* адрес живой: пока он пустой, все ссылки в телеграм намеренно
      не кликаются — см. конец drawText() */
   txtTgUrl:'https://t.me/aeternastudio',
+  /* Куда форма шлёт заявку. Это адрес CRM — она заводит карточку клиента
+     и сразу присылает уведомление в телеграм. Адрес держим здесь, потому
+     что CRM может переехать на другой хостинг, а трогать код ради смены
+     одной строки незачем. Пусто или недоступно — форма работает по
+     запасному пути: кладёт текст в буфер и открывает чат.
+
+     Сюда намеренно не вписан временный адрес туннеля. Туннель живёт, пока
+     включён компьютер, а его имя выдаётся случайно и потом достаётся
+     кому-то другому — то есть однажды имя и телеграм заказчика ушли бы
+     на чужой сервер. Постоянный адрес — это Space, поднимается по
+     DEPLOY.md в папке crm. */
+  txtLeadUrl:'https://tochkaq1-afk-aeterna-crm.hf.space/api/lead',
   txtMenu:'МЕНЮ',
   txtMenuOpen:'ЗАКРЫТЬ',
   txtMenuList:'РАБОТЫ|УСЛУГИ|КАК Я РАБОТАЮ|ОБО МНЕ|КОНТАКТЫ',
@@ -720,9 +732,14 @@ function runHBtn(b, task){
 }
 
 /* автомат отправки цепляем только к тем кнопкам, которые правда что-то
-   отправляют. Ссылка «смотреть работы» и МЕНЮ должны работать как обычно */
+   отправляют. Ссылка «смотреть работы» и МЕНЮ должны работать как обычно.
+   Кнопку заявки обходим стороной: у неё своя, настоящая отправка в
+   sendLead(). Раньше она попадала сюда — и общий автомат успевал поставить
+   «отправляю» до того, как до дела доходил sendLead. Тот видел состояние
+   не «idle» и молча выходил, а кнопка сама рисовала успех через полторы
+   секунды. Со стороны — заявка ушла, на деле — не уходила никуда. */
 function wireHButtons(){
-  document.querySelectorAll('.hbtn[data-states]').forEach(b => {
+  document.querySelectorAll('.hbtn[data-states]:not(.ct__send)').forEach(b => {
     if (b.dataset.wired) return;
     b.dataset.wired = '1';
     b.addEventListener('click', () => runHBtn(b));
@@ -2266,25 +2283,57 @@ async function sendLead(){
   out.textContent = '';
   const text = leadText();
 
+  /* Адрес CRM живёт в настройках, а не в коде: переехала CRM на другой
+     хостинг — меняется одно поле в панели правок, а не файл. Пустой адрес
+     означает «приёмника нет», и тогда сразу работает запасной путь. */
+  const url = String(cfg.txtLeadUrl || '').trim();
+
   try {
-    const r = await fetch('/api/lead', {
-      method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ text })
+    if (!url) throw new Error('приёмник не задан');
+
+    /* CRM ждёт поля по отдельности, а не одной строкой: она сама заводит
+       карточку клиента по контакту и склеивает повторные заявки от того же
+       человека. Из склеенного текста этого не вытащить. */
+    const r = await fetch(url, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body:JSON.stringify({
+        name:    g('name'),
+        contact: g('contact'),
+        kind:    g('kind'),
+        about:   g('about'),
+        website: g('website'),          /* ловушка: у человека всегда пустая */
+        source:  location.href.slice(0, 200),
+      })
     });
     if (!r.ok) throw new Error('приёмник не отвечает');
+
     btn.dataset.state = 'success';
     out.textContent = cfg.txtCtOk;
     ctForm.reset();
     setTimeout(() => { if (btn.dataset.state === 'success') btn.dataset.state = 'idle'; }, 2600);
+    /* Заявка дошла — в телеграм никого не уводим: человек своё дело сделал,
+       а лишняя вкладка после успеха читается как «ничего не отправилось,
+       пиши сам». */
+    return;
   } catch (e) {
-    /* тихо: сервера нет — это ожидаемо, а не поломка */
+    /* Приёмник не ответил — заявка не должна пропасть. Кладём текст в буфер
+       и открываем чат: это запасной путь, а не поломка.
+       Поля намеренно не чистим: человек ничего не отправил, и стереть
+       написанное им было бы хуже самой недоступности приёмника.
+       Ссылку показываем всегда, а не только когда вкладку погасили: сюда
+       мы попадаем уже после ожидания ответа, и браузер в этот момент
+       считает открытие всплывающим окном — полагаться на него нельзя. */
     try { await navigator.clipboard.writeText(text); } catch (e2) {}
     btn.dataset.state = 'idle';
-    out.innerHTML = `${cfg.txtCtOffline} <b>${cfg.txtTgName}</b>`;
+    const tg = String(cfg.txtTgUrl || '').trim();
+    out.innerHTML = cfg.txtCtOffline + (tg
+      ? ` <a href="${tg}" target="_blank" rel="noopener"><b>${cfg.txtTgName}</b></a>`
+      : ` <b>${cfg.txtTgName}</b>`);
+    openTelegram(text, true);
   } finally {
     btn.removeAttribute('aria-busy');
   }
-
-  openTelegram(text);
 }
 
 /* После отправки уводим человека прямо в чат со мной. Текст заявки уже лежит
@@ -2292,11 +2341,13 @@ async function sendLead(){
    а не «здравствуйте» в пустоту.
    Вкладку открываем в том же обработчике клика, что и отправку: открытую
    позже, из ответа сервера, браузер посчитает всплывающим окном и погасит. */
-function openTelegram(text){
+function openTelegram(text, quiet){
   const url = String(cfg.txtTgUrl).trim();
   if (!url) return;                 /* адрес не задан — никуда не ведём */
 
   const w = window.open(url, '_blank', 'noopener');
+  /* quiet — ссылка на экране уже стоит, второй раз писать её поверх незачем */
+  if (quiet) return;
   /* блокировщик всплывающих окон съел вкладку — показываем ссылку вместо неё,
      иначе человек решит, что кнопка не сработала */
   if (!w){
