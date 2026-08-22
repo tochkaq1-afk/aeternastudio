@@ -433,7 +433,7 @@ const DEFAULTS = {
   txtCtErr:'Поля «имя» и «связь» — обязательные.',
   txtCtErrAgree:'Нужно согласие на обработку данных — иначе я не смогу ответить.',
   txtCtOk:'Заявка ушла. Отвечу в течение дня.',
-  txtCtOffline:'Текст заявки скопирован — открываю телеграм, осталось вставить его в чат.',
+  txtCtOffline:'Открываю телеграм с готовой заявкой — останется нажать «отправить».',
   txtCtGo:'Телеграм не открылся сам — вот ссылка:',
   txtFootNote:'Сайт собран вручную: без конструкторов, библиотек анимации и готовых тем.'
 };
@@ -2291,21 +2291,34 @@ async function sendLead(){
   try {
     if (!url) throw new Error('приёмник не задан');
 
+    /* CRM бывает недоступна не только явной ошибкой (503 из-за квоты
+       хостинга), но и молчанием — тогда запрос без предела ждал бы ответа
+       вечно, а кнопка «отправляю» крутилась бы сколько угодно. Пять секунд
+       достаточно даже медленному интернету, а зависший сервер отсекают. */
+    const ac = new AbortController();
+    const to = setTimeout(() => ac.abort(), 5000);
+
     /* CRM ждёт поля по отдельности, а не одной строкой: она сама заводит
        карточку клиента по контакту и склеивает повторные заявки от того же
        человека. Из склеенного текста этого не вытащить. */
-    const r = await fetch(url, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body:JSON.stringify({
-        name:    g('name'),
-        contact: g('contact'),
-        kind:    g('kind'),
-        about:   g('about'),
-        website: g('website'),          /* ловушка: у человека всегда пустая */
-        source:  location.href.slice(0, 200),
-      })
-    });
+    let r;
+    try {
+      r = await fetch(url, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        signal: ac.signal,
+        body:JSON.stringify({
+          name:    g('name'),
+          contact: g('contact'),
+          kind:    g('kind'),
+          about:   g('about'),
+          website: g('website'),          /* ловушка: у человека всегда пустая */
+          source:  location.href.slice(0, 200),
+        })
+      });
+    } finally {
+      clearTimeout(to);
+    }
     if (!r.ok) throw new Error('приёмник не отвечает');
 
     btn.dataset.state = 'success';
@@ -2326,7 +2339,7 @@ async function sendLead(){
        считает открытие всплывающим окном — полагаться на него нельзя. */
     try { await navigator.clipboard.writeText(text); } catch (e2) {}
     btn.dataset.state = 'idle';
-    const tg = String(cfg.txtTgUrl || '').trim();
+    const tg = tgLeadUrl(text);
     out.innerHTML = cfg.txtCtOffline + (tg
       ? ` <a href="${tg}" target="_blank" rel="noopener"><b>${cfg.txtTgName}</b></a>`
       : ` <b>${cfg.txtTgName}</b>`);
@@ -2341,8 +2354,19 @@ async function sendLead(){
    а не «здравствуйте» в пустоту.
    Вкладку открываем в том же обработчике клика, что и отправку: открытую
    позже, из ответа сервера, браузер посчитает всплывающим окном и погасит. */
+/* Ссылка вида t.me/имя?text=... открывает чат с уже вписанным текстом в
+   поле ввода — телеграм умеет это сам, без нашего сервера и без буфера
+   обмена. Раньше рассчитывали на navigator.clipboard, а он в части
+   браузеров молча отказывает без явного разрешения — тогда человек
+   попадал в пустой чат и должен был вспоминать, что писать. */
+function tgLeadUrl(text){
+  const base = String(cfg.txtTgUrl || '').trim();
+  if (!base) return '';
+  return base + '?text=' + encodeURIComponent(text);
+}
+
 function openTelegram(text, quiet){
-  const url = String(cfg.txtTgUrl).trim();
+  const url = tgLeadUrl(text);
   if (!url) return;                 /* адрес не задан — никуда не ведём */
 
   const w = window.open(url, '_blank', 'noopener');
