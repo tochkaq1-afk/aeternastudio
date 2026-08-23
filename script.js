@@ -1829,15 +1829,18 @@ function svcStamp(){
    анкета с нуля: набирал полторы минуты, и вводить всё заново обидно. */
 
 /* Что выбрано, словами. Формат идёт первым, допы за ним через запятую —
-   это же уходит в поле «о задаче» и потом придёт мне в телеграм. */
+   это же уходит в поле «о задаче» и потом придёт мне в телеграм.
+   Куски делим вертикальной чертой, а не точкой по центру: в строке уже
+   есть запятые между допами, и на одних точках всё сливалось в кашу —
+   черта режет заметно, и каждый кусок начинается с заглавной. */
 function svcSummary(){
   const f = fmtRows()[svcF];
   const adds = [...svcOn].map(i => { const a = addAt(i); return a && a.row ? a.row.n : null; }).filter(Boolean);
   const t = svcCount();
   const parts = [f ? f.n : ''];
-  if (adds.length) parts.push('плюс ' + adds.join(', '));
-  parts.push(`итого ${svcMoney(t.sum)} ${CUR_SYM[svcCur]}`, `срок ${t.days} дн.`);
-  return parts.filter(Boolean).join(' · ');
+  if (adds.length) parts.push('Плюс ' + adds.join(', '));
+  parts.push(`Итого ${svcMoney(t.sum)} ${CUR_SYM[svcCur]}`, `Срок ${t.days} дн.`);
+  return parts.filter(Boolean).join(' | ');
 }
 
 /* Формат в чеке и пункт списка в форме — разные словари, поэтому ищем
