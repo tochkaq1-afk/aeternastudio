@@ -2323,9 +2323,31 @@ body.is-closed .ct__late{ display:block; }
 }
 .pr.is-in .war__i{ opacity:1; transform:none; }
 /* точка вместо номера: место в списке отмечено, а порядок не назначен */
+/* Свечение на светлой бумаге — не белый ореол (его тут попросту не видно),
+   а мягкая радужка вокруг точки: плотное кольцо вплотную и размытое
+   гало дальше. Пульс идёт с той же задержкой --d, что и появление
+   строки, поэтому точки зажигаются по очереди сверху вниз, а не
+   мигают хором. */
+/* Цвет берём у бумаги, а не у сайта. Талон — отдельный физический предмет
+   и остаётся светлым при любой палитре; на тёмной --ink становится светлым,
+   и точка вместе со свечением пропадала на такой же светлой бумаге. */
 .war__i:before{
   content:''; flex:none; width:6px; height:6px; border-radius:50%;
-  background:var(--ink); transform:translateY(-2px);
+  background:var(--paper-ink); transform:translateY(-2px);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--paper-ink) 14%, transparent),
+    0 0 9px 2px color-mix(in srgb, var(--paper-ink) 34%, transparent);
+}
+.pr.is-in .war__i:before{
+  animation:warDot 2.8s ease-in-out var(--d,0ms) infinite;
+}
+@keyframes warDot{
+  0%,100%{ box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--paper-ink) 10%, transparent),
+    0 0 8px 1px color-mix(in srgb, var(--paper-ink) 24%, transparent); }
+  50%{ box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--paper-ink) 20%, transparent),
+    0 0 14px 3px color-mix(in srgb, var(--paper-ink) 48%, transparent); }
 }
 .war__t{ font-family:var(--fh); font-weight:600; font-size:clamp(14px,1.4vw,18px); flex:none; }
 .war__t:after{ content:' —'; color:var(--dim); font-weight:400; }
@@ -2368,6 +2390,8 @@ body.is-closed .ct__late{ display:block; }
 @media (prefers-reduced-motion:reduce){
   .adv__c,.war__i{ opacity:1; transform:none; }
   .adv__i path,.adv__i rect,.adv__i circle,.adv__i line{ stroke-dashoffset:0; }
+  /* пульс выключаем, само свечение оставляем — оно статичное и не мешает */
+  .pr.is-in .war__i:before{ animation:none; }
 }
 
 /* ============================================================
