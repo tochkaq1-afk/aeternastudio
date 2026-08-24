@@ -21,7 +21,7 @@
      твикера внизу страницы. object-src 'none' и base-uri 'self' закрывают
      два классических вектора: подмену <base> и вставку плагинов.
      frame-ancestors здесь не работает (только как HTTP-заголовок),
-     от кликджекинга страховка ниже, в script.js. -->
+     от кликджекинга страховка ниже, в script.min.js. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src 'self' 'unsafe-inline';
@@ -38,7 +38,7 @@
 <link rel="canonical" href="https://aeternastudio.ru/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Пара здесь обязана совпадать с DEFAULTS.font в script.js. Раньше тут
+<!-- Пара здесь обязана совпадать с DEFAULTS.font в script.min.js. Раньше тут
      стоял Onest, а по умолчанию включён Golos Text — из-за этого шрифты
      качались дважды: сначала ненужный набор, потом нужный поверх него.
      Начертания урезаны до тех, что правда встречаются на странице. -->
@@ -56,9 +56,9 @@
      показалась». Без подсказки он находит его последним, уже разобрав
      весь скрипт. -->
 <link rel="preload" as="image" href="assets/works/klaus.webp" fetchpriority="high">
-<link rel="stylesheet" href="styles.css?v=177">
+<link rel="stylesheet" href="styles.min.css?v=177">
 </head>
-<!-- Класс обязан совпадать с DEFAULTS.macFrame в script.js — те же грабли,
+<!-- Класс обязан совпадать с DEFAULTS.macFrame в script.min.js — те же грабли,
      что с :root и палитрой. apply() ставит его уже после первой отрисовки,
      и если стартовое состояние другое, витрина успевает моргнуть корпусом
      и запустить переход тени с нуля. -->
@@ -67,7 +67,7 @@
 <!-- Интро: линия-перо идёт слева направо, из-под неё по одной проявляются
      буквы имени, потом лист уезжает вверх и первый экран начинает собираться
      конструктором. Разметка лежит прямо здесь, а не собирается скриптом:
-     иначе между первой отрисовкой и запуском script.js успел бы мелькнуть
+     иначе между первой отрисовкой и запуском script.min.js успел бы мелькнуть
      голый сайт — ровно то, что интро и должно закрыть. Скрипт его только
      проигрывает и снимает; если он не дошёл, класс is-intro никто не поставит
      и слой останется невидимым. -->
@@ -531,8 +531,7 @@
   </div>
 </aside>
 
-<script src="script.js?v=188" defer></script>
-<script src="dust.js?v=99" defer></script>
+<script src="script.min.js?v=188" defer></script>
 
 <!-- Панель настройки убрана из публикации: посетителю она не нужна,
      а адрес ?tweak=1 открывал её кому угодно. Файлы tweak.js и tweak.css
