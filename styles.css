@@ -515,6 +515,15 @@ body:not(.is-nomac) .mac .shw{ border-radius:6px; box-shadow:none; border-color:
   flex:none; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center;
   gap:4px 14px; padding:11px 14px 12px; border-top:1px solid var(--line);
 }
+/* Нижняя метка (SEO) сидит верхом на нижнем крае корпуса: bottom:-13px.
+   На телефоне подпись работы доходила ровно до её верхней границы —
+   вплотную, а рамка и ореол метки ложились прямо на буквы и читались
+   как посторонняя дуга поперёк строки. Двенадцать пикселей снизу
+   опускают край корпуса вместе с меткой и разводят их. */
+.shw__foot{ padding-bottom:22px; }
+@media (max-width:560px){
+  .shw__foot{ padding-bottom:24px; }
+}
 .shw__n{
   grid-column:1; font-family:var(--fh); font-weight:600; font-size:.9rem; letter-spacing:-.02em;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
@@ -1155,6 +1164,16 @@ body.is-cursor-custom .cursor{ display:block; }
 .cur button{ font:inherit; font-family:var(--fm); font-size:.68rem; letter-spacing:.04em;
   border:0; background:none; color:var(--dim); border-radius:100px; padding:5px 11px;
   cursor:pointer; transition:background .2s, color .2s; }
+/* Кнопка была 42x27 — вдвое меньше цели, в которую попадают пальцем.
+   Растим невидимой областью нажатия, а не отступами: сама пилюля
+   переключателя должна остаться той же высоты, иначе поедет строка. */
+@media (pointer:coarse){
+  .cur button{ position:relative; }
+  .cur button::after{
+    content:''; position:absolute; left:0; right:0;
+    top:50%; height:44px; transform:translateY(-50%);
+  }
+}
 .cur button.is-on{ background:var(--ink); color:var(--bg); }
 /* Ценники слева перекручиваются числами, а чек печатается своими строками —
    его цифры меняются разом. Мягкая смена держит оба места в одном темпе,
@@ -1388,7 +1407,8 @@ body.is-neon-always .hbtn.neon:after{ opacity:calc(var(--neonGlow) * .6); animat
    по построению. */
 .fmt__mark{
   position:absolute; top:-9px; left:14px; z-index:3;
-  font-size:.54rem; letter-spacing:.14em; text-transform:uppercase; font-weight:600;
+  /* было .54rem — 8.6px, на телефоне это уже не читается */
+  font-size:.64rem; letter-spacing:.12em; text-transform:uppercase; font-weight:600;
   padding:3px 9px; border:0; border-radius:999px;
   background:var(--ink); color:var(--bg); white-space:nowrap;
   box-shadow:0 2px 10px -3px color-mix(in srgb, var(--ink) 45%, transparent);
@@ -1482,8 +1502,9 @@ button[aria-expanded="true"]:hover > .tgl:after{ transform:translateX(15px); }
    Справа, а не слева, как у форматов: слева стоит галочка выбора */
 .aopt__mark{
   position:absolute; top:-8px; right:12px; z-index:3;
-  font-size:.5rem; letter-spacing:.14em; text-transform:uppercase; font-weight:600;
-  padding:2px 8px; border-radius:999px;
+  /* было .5rem — ровно 8px, мельче всего на странице */
+  font-size:.62rem; letter-spacing:.12em; text-transform:uppercase; font-weight:600;
+  padding:3px 9px; border-radius:999px;
   background:var(--ink); color:var(--bg); white-space:nowrap;
   box-shadow:0 2px 8px -3px color-mix(in srgb, var(--ink) 45%, transparent);
 }
@@ -2655,4 +2676,68 @@ body.is-intro .intro__pen{
    не дойдёт до этой ветки, лист всё равно не встанет поперёк сайта */
 @media (prefers-reduced-motion:reduce){
   body.is-intro .intro{ display:none; }
+}
+
+/* ============================================================
+   УВЕДОМЛЕНИЕ О ПАМЯТИ БРАУЗЕРА
+   Не окно согласия: куки сайт не ставит и никого не считает,
+   отклонять нечего. Поэтому — узкая карточка в углу, а не
+   полоса во всю ширину, и одна кнопка вместо двух.
+   ============================================================ */
+.note{
+  position:fixed; left:clamp(12px,3vw,26px); bottom:clamp(12px,3vw,26px); z-index:60;
+  width:min(340px, calc(100vw - 24px));
+  background:var(--paper); color:var(--paper-ink);
+  border:1px solid var(--line); border-radius:14px;
+  padding:16px 16px 14px;
+  box-shadow:0 14px 34px rgba(17,17,19,.14), 0 2px 6px rgba(17,17,19,.06);
+  font-family:var(--fb);
+  /* стартовое состояние — уехала вниз и прозрачна; класс is-on её поднимает */
+  opacity:0; transform:translateY(14px);
+  transition:opacity .45s ease, transform .45s cubic-bezier(.2,.7,.3,1);
+}
+.note.is-on{ opacity:1; transform:none; }
+.note__t{
+  margin:0 0 12px; font-size:13.5px; line-height:1.5; color:var(--paper-ink);
+}
+.note__acts{ display:flex; align-items:center; gap:8px; }
+.note__ok{
+  /* 44px по высоте — иначе пальцем на телефоне не попасть */
+  min-height:44px; padding:0 20px;
+  border:0; border-radius:9px; cursor:pointer;
+  background:var(--paper-ink); color:var(--paper);
+  font-family:var(--fb); font-size:13.5px; font-weight:600;
+  transition:opacity .2s ease;
+}
+.note__ok:hover{ opacity:.84; }
+.note__more{
+  min-height:44px; display:inline-flex; align-items:center; padding:0 12px;
+  color:var(--paper-ink); opacity:.62; font-size:13.5px; text-decoration:none;
+  border-bottom:0;
+}
+.note__more:hover{ opacity:1; text-decoration:underline; }
+
+@media (max-width:520px){
+  /* Кнопка «Меню» висит по центру внизу и занимает полосу от 30 до 74px
+     от края экрана. Плашка снизу накрывала её вместе со ссылкой
+     «Подробно» — поднимаем над кнопкой, а не поверх неё. */
+  .note{ left:10px; right:10px; bottom:86px; width:auto; padding:14px 14px 12px; }
+  .note__t{ font-size:13px; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .note{ transition:none; }
+}
+
+/* Ссылки-мелочь в шапке, меню и подвале были 15–24px по высоте: мышью
+   попасть можно, пальцем — нет. Область нажатия растим псевдоэлементом,
+   чтобы не трогать строку и межстрочные расстояния. */
+@media (pointer:coarse){
+  .foot__right a,
+  .top__mark, .top__tg, .menu__tg{ position:relative; }
+  .foot__right a::after,
+  .top__mark::after, .top__tg::after, .menu__tg::after{
+    content:''; position:absolute; left:0; right:0;
+    top:50%; height:44px; transform:translateY(-50%);
+  }
 }

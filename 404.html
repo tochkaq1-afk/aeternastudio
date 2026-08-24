@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Страница не найдена — AETERNA</title>
+<meta name="description" content="Такой страницы на сайте AETERNA нет.">
+<!-- Ошибочные адреса в поиске не нужны -->
+<meta name="robots" content="noindex, follow">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#f2f0ea">
+<link rel="icon" href="favicon-32.png?v=2" sizes="32x32" type="image/png">
+<link rel="icon" href="favicon-48.png?v=2" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Golos+Text:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f2f0ea; --ink:#111113; --dim:#6c6a64; --line:#d2cfc5;
+  --fh:'Unbounded', system-ui, sans-serif;
+  --fb:'Golos Text', system-ui, sans-serif;
+}
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0; background:var(--bg); color:var(--ink); font-family:var(--fb);
+  display:flex; flex-direction:column; justify-content:center;
+  padding:clamp(24px,6vw,80px); line-height:1.6;
+}
+.wrap{ width:100%; max-width:640px; margin:0 auto; }
+
+/* Число во всю ширину — тот же приём, что в подвале главной:
+   знак работает картинкой, а не подписью */
+.big{
+  font-family:var(--fh); font-weight:600; letter-spacing:-.05em; line-height:.86;
+  font-size:min(30vw, 220px); margin:0 0 clamp(18px,3vw,30px);
+}
+h1{
+  font-family:var(--fh); font-weight:600; letter-spacing:-.03em; line-height:1.15;
+  font-size:clamp(20px,3.4vw,30px); margin:0 0 12px;
+}
+p{ margin:0 0 clamp(24px,4vw,34px); color:var(--dim); font-size:clamp(14.5px,1.6vw,16.5px); }
+.acts{ display:flex; flex-wrap:wrap; gap:10px; }
+/* 44px — минимальная цель, в которую попадают пальцем */
+.btn{
+  display:inline-flex; align-items:center; min-height:48px; padding:0 22px;
+  border-radius:10px; text-decoration:none; font-size:14.5px; font-weight:500;
+  transition:opacity .2s ease, background .2s ease;
+}
+.btn--main{ background:var(--ink); color:var(--bg); }
+.btn--main:hover{ opacity:.85; }
+.btn--ghost{ border:1px solid var(--line); color:var(--ink); }
+.btn--ghost:hover{ background:#fff; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="big" aria-hidden="true">404</div>
+    <h1>Такой страницы здесь нет</h1>
+    <p>Возможно, адрес набран с опечаткой или страницу переименовали.</p>
+    <div class="acts">
+      <a class="btn btn--main" href="/">На главную</a>
+      <a class="btn btn--ghost" href="/privacy.html">Политика</a>
+    </div>
+  </div>
+</body>
+</html>

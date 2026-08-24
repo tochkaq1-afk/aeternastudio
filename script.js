@@ -2934,4 +2934,42 @@ function playIntro(force){
 
 if (cfg.autoplay) playIntro(); else seek(1);
 
+/* ---------------------------------------------------------------
+   Уведомление о памяти браузера.
+   Не окно согласия: куки сайт не ставит и аналитики нет, отклонять
+   нечего — поэтому одна кнопка и ссылка на политику. Ждём конца
+   интро, иначе плашка выезжает поверх заставки. --------------- */
+(() => {
+  const note = document.getElementById('note');
+  const ok   = document.getElementById('noteOk');
+  if (!note || !ok) return;
+
+  const KEY = 'pf-note-seen';
+  try { if (localStorage.getItem(KEY)) return; } catch(e){}
+
+  const show = () => {
+    note.hidden = false;
+    /* кадр между снятием hidden и классом — иначе переход не проиграется */
+    requestAnimationFrame(() => requestAnimationFrame(() => note.classList.add('is-on')));
+  };
+
+  const body = document.body;
+  if (body.classList.contains('is-intro-done') || !body.classList.contains('is-intro')) {
+    setTimeout(show, 900);
+  } else {
+    const mo = new MutationObserver(() => {
+      if (body.classList.contains('is-intro-done')) { mo.disconnect(); setTimeout(show, 500); }
+    });
+    mo.observe(body, { attributes:true, attributeFilter:['class'] });
+    /* страховка на случай, если интро не доиграет */
+    setTimeout(() => { mo.disconnect(); if (note.hidden) show(); }, 7000);
+  }
+
+  ok.addEventListener('click', () => {
+    note.classList.remove('is-on');
+    setTimeout(() => { note.hidden = true; }, 450);
+    try { localStorage.setItem(KEY, '1'); } catch(e){}
+  });
+})();
+
 })();
