@@ -2858,20 +2858,15 @@ const PF = window.PF = {
   progress:0
 };
 
+/* Всё это собиралось одним куском при загрузке: девять разделов, из них
+   восемь ниже первого экрана. Получалась одна задача больше чем на
+   полсекунды — главный поток стоял, и на телефоне это видно как
+   подлагивание первых движений. Первому экрану нужны только сетка,
+   плитки, меню и кнопки — их и строим сразу. */
 buildGrid();
 buildTiles();
 buildMenu();
-buildAdv();
-buildWorks();
-buildSvc();
-buildFlow();
-buildObj();
-buildPrinciples();
-buildAbout();
-buildStack();
-buildContact();
 neonPhase();
-fitFootMark();
 heroParallax();
 buildHButtons();
 wireHButtons();
@@ -2882,6 +2877,44 @@ heroCtaApply();
 menuFit();
 requestAnimationFrame(menuFrame);
 apply();
+
+/* ---------------------------------------------- сборка нижних разделов
+   Каждый раздел — отдельная задача в свободном кадре, а не общий кусок:
+   браузер успевает между ними отрисовать и ответить на касание. Порядок
+   тот же, что был. fitFootMark идёт последним — знак в подвале меряется
+   по готовой разметке. */
+const laterBuilds = [
+  buildAdv, buildWorks, buildSvc, buildFlow, buildObj,
+  buildPrinciples, buildAbout, buildStack, buildContact,
+  () => { neonPhase(); fitFootMark(); }
+];
+let laterAt = 0;
+const idleRun = window.requestIdleCallback
+  ? (fn) => requestIdleCallback(fn, { timeout: 260 })
+  : (fn) => setTimeout(fn, 16);
+
+function laterStep(){
+  if (laterAt >= laterBuilds.length) return;
+  laterBuilds[laterAt++]();
+  idleRun(laterStep);
+}
+
+/* Если человек прыгнул по якорю или полез вниз раньше, чем очередь дошла,
+   доделываем остаток разом — пустой раздел под ссылкой хуже подлагивания */
+function flushLaterBuilds(){
+  while (laterAt < laterBuilds.length) laterBuilds[laterAt++]();
+}
+addEventListener('click', e => {
+  if (e.target.closest && e.target.closest('a[href^="#"]')) flushLaterBuilds();
+}, true);
+addEventListener('scroll', function once(){
+  if (scrollY > innerHeight * 0.4){
+    removeEventListener('scroll', once);
+    flushLaterBuilds();
+  }
+}, { passive:true });
+
+idleRun(laterStep);
 loadRemoteStatus();
 setTime(0);
 requestAnimationFrame(tick);
