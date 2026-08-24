@@ -496,7 +496,11 @@ body:not(.is-nomac) .mac .shw{ border-radius:6px; box-shadow:none; border-color:
    is-out, пока новый его накрывает, — иначе между кадрами мелькает подложка. */
 .shw__p{
   position:absolute; inset:0;
-  opacity:0; filter:blur(22px); transform:scale(1.08);
+  /* Масштаб был 1.08 — входящий кадр на миг оказывался КРУПНЕЕ текущего,
+     и браузер каждый раз засчитывал его новым «главным кадром» страницы.
+     Момент показа уезжал к каждому перелистыванию. Сжимаем внутрь вместо
+     наружу: расфокус читается так же, а кадр больше не растёт. */
+  opacity:0; filter:blur(22px); transform:scale(.94);
   transition:opacity .6s ease, filter .8s ease, transform .9s cubic-bezier(.22,1,.36,1);
 }
 .shw__p.is-on{ opacity:1; filter:blur(0); transform:none; z-index:2; }

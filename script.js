@@ -126,7 +126,10 @@ const DEFAULTS = {
   dustShape:'infBack', dustShapes:'inf|infBack',
   dustAuto:true, dustHold:5, dustMorph:1, dustChaos:40,
 
-  tGrid:0.8, tWire:1.1, tFill:1.0, tColor:0.6, stagger:0.075,
+  /* Сборка «Конструктора» занимала 4,1 секунды, и витрина — самый крупный
+     элемент экрана — проявлялась только к её концу. Страница при этом
+     готова через 0,4с. Ужато примерно вдвое: движение то же, ожидание нет. */
+  tGrid:0.5, tWire:0.65, tFill:0.6, tColor:0.35, stagger:0.045,
   ease:'outQuint', autoplay:true, showStage:true,
   intro:true, introOnce:true,
 
@@ -1003,8 +1006,34 @@ if (shw){
   if (macPhoneImg) macPhoneImg.src = SHOW[0].mimg;
 
   const shwNext = () => shwGo((si + 1) % SHOW.length);
-  const shwPlay = () => { clearInterval(shwTimer); shwTimer = setInterval(shwNext, 3800); };
-  const shwStop = () => clearInterval(shwTimer);
+  /* Первому слайду даём постоять дольше остальных. Дело не в красоте:
+     витрина — самый крупный элемент экрана, и по ней считается момент
+     «страница показалась». Перелистывание на 3,8с рисовало новый крупный
+     кадр, и этот момент отодвигался к четырём секундам, хотя сама
+     витрина видна с четверти секунды. Дальше листается как прежде. */
+  const SHW_EVERY = 3800;
+  /* Витрина — самый крупный элемент экрана, и по ней браузер считает
+     момент «страница показалась». Пока она листается сама, этот момент
+     переезжает на каждое перелистывание: старый кадр гаснет, новый
+     становится крупнейшим, и отсчёт начинается заново. Поэтому ход
+     запускаем по первому движению человека — прокрутке, касанию или
+     мыши. Кто пришёл смотреть, увидит смену сразу; для того, кто
+     стоит неподвижно, первый экран остаётся спокойным. */
+  let shwArmed = false;
+  const shwArm = () => {
+    if (shwArmed) return;
+    shwArmed = true;
+    ['scroll','pointerdown','pointermove','keydown','wheel','touchstart']
+      .forEach(ev => removeEventListener(ev, shwArm, true));
+    clearInterval(shwTimer);
+    shwTimer = setInterval(shwNext, SHW_EVERY);
+  };
+  const shwPlay = () => {
+    if (shwArmed){ clearInterval(shwTimer); shwTimer = setInterval(shwNext, SHW_EVERY); return; }
+    ['scroll','pointerdown','pointermove','keydown','wheel','touchstart']
+      .forEach(ev => addEventListener(ev, shwArm, { capture:true, passive:true }));
+  };
+  const shwStop = () => { clearTimeout(shwTimer); clearInterval(shwTimer); };
 
   dots.addEventListener('click', e => {
     const b = e.target.closest('[data-i]');
@@ -2964,15 +2993,17 @@ function playIntro(force){
     setTimeout(() => {
       body.classList.remove('is-intro', 'is-intro-out');
       body.classList.add('is-intro-done');
-    }, 620);
+    }, 400);
   };
 
-  const HOLD = 1450;
+  /* Было 1450мс. Страница отрисовывалась за 0,46с и ждала заставку.
+     Вдвое короче — движение читается так же, простой уходит. */
+  const HOLD = 720;
   setTimeout(close, HOLD);
   /* страховка: во вкладке, которую свернули, ни rAF, ни CSS-анимации не идут,
      а setTimeout в фоне растягивают. Клик и любая клавиша тоже снимают лист —
      ждать чужую заставку никто не обязан */
-  setTimeout(close, HOLD + 2500);
+  setTimeout(close, HOLD + 1800);
   box.addEventListener('click', close);
   addEventListener('keydown', close, { once:true });
 }
