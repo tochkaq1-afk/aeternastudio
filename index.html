@@ -42,8 +42,20 @@
      стоял Onest, а по умолчанию включён Golos Text — из-за этого шрифты
      качались дважды: сначала ненужный набор, потом нужный поверх него.
      Начертания урезаны до тех, что правда встречаются на странице. -->
-<link id="fontLink" rel="stylesheet"
+<!-- Таблица шрифтов держала отрисовку 586мс: браузер не рисует ничего,
+     пока не получит её с чужого сервера. media="print" снимает с неё эту
+     власть, onload возвращает обратно — правила применяются, но уже не
+     ценой пустого экрана. Мигания это не добавляет: в адресе стоит
+     display=swap, то есть подмена шрифта происходила и раньше. -->
+<link id="fontLink" rel="stylesheet" media="print" onload="this.media='all'"
       href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Golos+Text:wght@400;500;600&display=swap">
+<noscript><link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Golos+Text:wght@400;500;600&display=swap"></noscript>
+
+<!-- Главный кадр витрины — то, по чему браузер считает момент «страница
+     показалась». Без подсказки он находит его последним, уже разобрав
+     весь скрипт. -->
+<link rel="preload" as="image" href="assets/works/klaus.webp" fetchpriority="high">
 <link rel="stylesheet" href="styles.css?v=177">
 </head>
 <!-- Класс обязан совпадать с DEFAULTS.macFrame в script.js — те же грабли,
@@ -519,37 +531,12 @@
   </div>
 </aside>
 
-<script src="script.js?v=186" defer></script>
+<script src="script.js?v=187" defer></script>
 <script src="dust.js?v=99" defer></script>
 
-<!-- Твикер посетителю не нужен, а весил он 33 КБ и был самым долгим
-     ресурсом на странице. Теперь подгружается по требованию: клавишей
-     «~»/«Ё» или адресом с ?tweak=1 — панель и шестерёнку он рисует сам. -->
-<script>
-(() => {
-  let asked = false;
-  function loadTweak(){
-    if (asked) return;
-    asked = true;
-    /* флаг ставим до загрузки: твикер прочтёт его на старте и откроется
-       сразу, иначе первое нажатие только скачало бы файл */
-    window.PF_TWEAK_OPEN = true;
-    const css = document.createElement('link');
-    css.rel = 'stylesheet'; css.href = 'tweak.css?v=100';
-    document.head.appendChild(css);
-    const js = document.createElement('script');
-    js.src = 'tweak.js?v=154';
-    document.body.appendChild(js);
-  }
-  addEventListener('keydown', e => {
-    if (e.target.matches('input, select, textarea')) return;
-    if (e.key === '`' || e.key === '~' || e.key === 'ё' || e.key === 'Ё'){
-      e.preventDefault();
-      loadTweak();
-    }
-  });
-  if (new URLSearchParams(location.search).has('tweak')) loadTweak();
-})();
-</script>
+<!-- Панель настройки убрана из публикации: посетителю она не нужна,
+     а адрес ?tweak=1 открывал её кому угодно. Файлы tweak.js и tweak.css
+     остались в папке, но больше не выкладываются — вернуть можно одной
+     строкой, когда понадобится править вид. -->
 </body>
 </html>

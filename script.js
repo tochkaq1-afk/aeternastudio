@@ -955,7 +955,7 @@ if (shw){
   view.innerHTML = SHOW.map((s, i) => `
     <div class="shw__p${i === 0 ? ' is-on' : ''}" data-k="${s.k}" role="img"
          aria-label="${s.n} — ${s.d}">
-      <img class="shw__img" src="${s.img}" alt="" loading="${i === 0 ? 'eager' : 'lazy'}">
+      <img class="shw__img" src="${s.img}" alt="" loading="${i === 0 ? 'eager' : 'lazy'}"${i === 0 ? ' fetchpriority="high" decoding="sync"' : ''}>
     </div>`).join('');
   dots.innerHTML = SHOW.map((s, i) =>
     `<button type="button" role="tab" data-i="${i}" class="${i === 0 ? 'is-on' : ''}"
@@ -2592,8 +2592,14 @@ const GLOW_SEL = '.adv__c, .wcard, .pr__c, .fmt, .flow__p, .wchip, .stk__i';
    по общим часам делает фазу абсолютной: рамка продолжается с того же места.
    Часы берём у таймлайна анимаций, а не у performance.now() — именно по нему
    браузер отсчитывает кадры, и лишнего смещения не набегает. */
+/* Скорость контура читалась обратно из CSS через getComputedStyle, хотя
+   записывает её туда сам же apply() из cfg.neonSpin. Обращение к
+   вычисленным стилям заставляет браузер пересчитать стили ВСЕЙ страницы
+   против 160 КБ правил — под торможением процессора это 450мс на один
+   вызов, то самое подлагивание при входе. Узлов .neon всего двадцать,
+   дело было не в них. Берём значение из настроек напрямую. */
 function neonPhase(root){
-  const spin = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--neonSpin')) || 4.5;
+  const spin = cfg.neonSpin || 4.5;
   const d = -((document.timeline.currentTime / 1000) % spin);
   (root || document).querySelectorAll('.neon').forEach(n => n.style.setProperty('--neonDelay', d.toFixed(3) + 's'));
 }
@@ -2702,12 +2708,18 @@ function fitFootMark(){
      две разные надписи. Берём наименьший из подошедших: тогда длинная
      строка ровно заполняет ширину, а короткая просто не достаёт до края,
      но набрана тем же кеглем. */
-  const fits = lines.map((l, i) => {
+  /* Раньше в одном цикле шли запись кегля и чтение ширины: браузер на
+     каждом шаге заново пересчитывал раскладку, а с таблицей в 160 КБ это
+     недёшево. Сначала пишем всем строкам пробный кегль, потом одним
+     заходом читаем ширины — пересчёт случается один раз, а не по разу
+     на строку. */
+  lines.forEach((l, i) => {
     l.textContent = parts[i];
     l.style.fontSize = '100px';
-    const w = l.getBoundingClientRect().width;
-    return w ? 100 * box / w : 0;
-  }).filter(Boolean);
+  });
+  const fits = lines
+    .map(l => { const w = l.getBoundingClientRect().width; return w ? 100 * box / w : 0; })
+    .filter(Boolean);
 
   if (!fits.length) return;
   const size = Math.min(...fits);
