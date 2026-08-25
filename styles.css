@@ -461,6 +461,13 @@ body:not(.is-nomac) .mac .shw{ border-radius:6px; box-shadow:none; border-color:
   border:1px solid var(--line);
   box-shadow:0 26px 60px -34px color-mix(in srgb, var(--ink) 55%, transparent);
   transition:box-shadow .9s cubic-bezier(.22,1,.36,1);
+  /* .shw__p внутри анимирует filter:blur() — в Safari/WebKit размытый
+     слой получает свой композитный слой и перестаёт слушаться
+     overflow:hidden родителя: видна жёсткая тёмная кромка поверх
+     подписи работы. -webkit-mask-image ничего не красит, но заставляет
+     WebKit по-настоящему обрезать содержимое, а не полагаться на
+     overflow. Тот же приём уже стоит на .mac__phone__scr выше. */
+  -webkit-mask-image:-webkit-radial-gradient(#000,#000);
 }
 /* тень густеет под курсором — но уже от состояния обёртки */
 .mac.is-live .shw{
@@ -490,7 +497,10 @@ body:not(.is-nomac) .mac .shw{ border-radius:6px; box-shadow:none; border-color:
 
 /* Экраны лежат стопкой и проявляются друг сквозь друга: подменять один
    узел значило бы моргать пустотой между кадрами. */
-.shw__view{ position:relative; aspect-ratio:16/10; background:var(--wire); overflow:hidden; }
+.shw__view{
+  position:relative; aspect-ratio:16/10; background:var(--wire); overflow:hidden;
+  -webkit-mask-image:-webkit-radial-gradient(#000,#000);
+}
 /* Переход «расфокус» (вариант E из proto-shw.html): старый кадр уплывает
    в размытие, новый выходит из тумана. Уходящий держим видимым классом
    is-out, пока новый его накрывает, — иначе между кадрами мелькает подложка. */
