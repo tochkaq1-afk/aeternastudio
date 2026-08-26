@@ -2660,9 +2660,16 @@ body.is-intro-done .intro{ display:none; }
   font-size:clamp(38px, 13vw, 170px); line-height:1; color:var(--ink);
 }
 .intro__name span{ opacity:0; transform:translateY(.22em); }
+/* Тайминги привязаны к HOLD в script.js (720мс, было 1450мс) — при
+   старой длительности буквы, а с ней и заставка портфолио, обрывались
+   до того, как дорисуется имя: HOLD=720мс наступал раньше, чем успевали
+   появиться все семь букв «AETÉRNA» (последняя раньше начинала
+   рисоваться только на 960мс). Видно было «AE» и всё. Задержки и
+   длительность сокращены пропорционально — последняя буква теперь
+   дорисовывается к 600мс, до срабатывания HOLD остаётся запас. */
 body.is-intro .intro__name span{
-  animation:introChar .32s cubic-bezier(.22,1,.36,1) forwards;
-  animation-delay:calc(.33s + var(--i) * .105s);
+  animation:introChar .15s cubic-bezier(.22,1,.36,1) forwards;
+  animation-delay:calc(.15s + var(--i) * .05s);
 }
 @keyframes introChar{ to{ opacity:1; transform:none } }
 
@@ -2675,8 +2682,10 @@ body.is-intro .intro__name span{
   content:''; position:absolute; left:-3.5px; top:calc(50% - 4px);
   width:8px; height:8px; border-radius:50%; background:var(--ink);
 }
+/* Тот же пересчёт, что у букв выше: перо должно доехать до правого
+   края синхронно с ними, а не после того, как лист уже начал уезжать. */
 body.is-intro .intro__pen{
-  animation:introPen 1.3s cubic-bezier(.5,0,.2,1) forwards;
+  animation:introPen .6s cubic-bezier(.5,0,.2,1) forwards;
 }
 @keyframes introPen{
   0%{ opacity:0; left:8% }

@@ -2520,10 +2520,9 @@ if (progBar){
    бы её туда-сюда каждый кадр. Верхние 80 пикселей страницы держим
    шапку всегда — на самом верху прятать нечего, а мигание при отскоке
    резинкой на телефоне выглядело бы поломкой. */
-let topLast = scrollY, topWait = false;
+let topLast = scrollY;
 
 function topDraw(){
-  topWait = false;
   const y = Math.max(0, scrollY);
   const d = y - topLast;
   if (Math.abs(d) < 6) return;
@@ -2531,9 +2530,13 @@ function topDraw(){
   document.body.classList.toggle('is-hidetop', d > 0 && y > 80);
 }
 
-addEventListener('scroll', () => {
-  if (!topWait){ topWait = true; requestAnimationFrame(topDraw); }
-}, { passive:true });
+/* Класс переключаем ПРЯМО в обработчике, а не в requestAnimationFrame.
+   На iOS Safari во время инерционной прокрутки кадровые колбэки приходят
+   с опозданием или не приходят до остановки пальца — шапка там просто не
+   уезжала. Событие прокрутки при этом приходит исправно. Единственная
+   схема из четырёх сайтов, которая работала на его телефоне (FlowerHome),
+   устроена именно так. */
+addEventListener('scroll', topDraw, { passive:true });
 
 /* ---------------------------------------------- проявление экранов */
 /* Экран проявляется и его части съезжаются по глубине — заголовок отстаёт
